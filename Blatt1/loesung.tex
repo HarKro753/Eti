@@ -1,0 +1,140 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
+
+\title{ETI -- Aufgabenblatt 1 \\ Präsenzaufgaben}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+%% ============================================================
+\section*{Aufgabe 1.1}
+
+Seien $L_1 = \{w1 \mid w \in \{0,1\}^*\}$ und $L_2 = \{w0 \mid w \in \{0,1\}^*\}$.
+
+\subsection*{1. $L_a = L_1 \cup L_2 = \{0,1\}^+$}
+
+\begin{center}
+\begin{tikzpicture}
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, accepting, right=of q0] (q1) {$q_1$};
+    \path (q0) edge node[above] {$0,1$} (q1)
+          (q1) edge[loop above] node {$0,1$} ();
+\end{tikzpicture}
+\end{center}
+
+\subsection*{2. $L_b = L_1 \cap L_2 = \emptyset$}
+
+\begin{center}
+\begin{tikzpicture}
+    \node[state, initial] (q0) {$q_0$};
+    \path (q0) edge[loop above] node {$0,1$} ();
+\end{tikzpicture}
+\end{center}
+
+\subsection*{3. $L_c = L_1 \circ L_2 = \{w \in \{0,1\}^* \mid |w| \geq 2,\; w \text{ endet mit } 0\}$}
+
+\begin{center}
+\begin{tikzpicture}
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (q1) {$q_1$};
+    \node[state, accepting, right=of q1] (q2) {$q_2$};
+    \path (q0) edge node[above] {$0,1$} (q1)
+          (q1) edge[bend left] node[above] {$0$} (q2)
+          (q1) edge[loop above] node {$1$} ()
+          (q2) edge[loop above] node {$0$} ()
+          (q2) edge[bend left] node[below] {$1$} (q1);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{4. $L_d = L_2 \circ L_1 = \{w \in \{0,1\}^* \mid |w| \geq 2,\; w \text{ endet mit } 1\}$}
+
+\begin{center}
+\begin{tikzpicture}
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (q1) {$q_1$};
+    \node[state, accepting, right=of q1] (q2) {$q_2$};
+    \path (q0) edge node[above] {$0,1$} (q1)
+          (q1) edge[bend left] node[above] {$1$} (q2)
+          (q1) edge[loop above] node {$0$} ()
+          (q2) edge[loop above] node {$1$} ()
+          (q2) edge[bend left] node[below] {$0$} (q1);
+\end{tikzpicture}
+\end{center}
+
+%% ============================================================
+\section*{Aufgabe 1.2}
+
+\[
+    L(M_{2.1}) = \{w \in \{a,b\}^* \mid w \text{ enthält eine gerade Anzahl von } b\text{'s}\}
+\]
+
+%% ============================================================
+\section*{Aufgabe 1.3}
+
+\begin{center}
+\begin{tikzpicture}
+    \node[state, initial, accepting] (q0) {$q_0$};
+    \node[state, right=of q0] (q1) {$q_1$};
+    \node[state, right=of q1] (q2) {$q_2$};
+    \node[state, right=of q2] (q3) {$q_3$};
+    \path (q0) edge[loop above] node {$a$} ()
+          (q0) edge node[above] {$b$} (q1)
+          (q1) edge[loop above] node {$a$} ()
+          (q1) edge node[above] {$b$} (q2)
+          (q2) edge[loop above] node {$a$} ()
+          (q2) edge node[above] {$b$} (q3)
+          (q3) edge[loop above] node {$a$} ()
+          (q3) edge[bend left=40] node[below] {$b$} (q0);
+\end{tikzpicture}
+\end{center}
+
+%% ============================================================
+\section*{Aufgabe 1.4}
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.5cm]
+    \node[state, initial, accepting] (00) {$(0,0)$};
+    \node[state, right=of 00] (11) {$(1,1)$};
+    \node[state, right=of 11] (02) {$(0,2)$};
+    \node[state, right=of 02] (13) {$(1,3)$};
+    \path (00) edge[loop above] node {$a$} ()
+          (00) edge node[above] {$b$} (11)
+          (11) edge[loop above] node {$a$} ()
+          (11) edge node[above] {$b$} (02)
+          (02) edge[loop above] node {$a$} ()
+          (02) edge node[above] {$b$} (13)
+          (13) edge[loop above] node {$a$} ()
+          (13) edge[bend left=40] node[below] {$b$} (00);
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.5cm]
+    \node[state, initial, accepting] (s0) {$s_0$};
+    \node[state, right=of s0] (s1) {$s_1$};
+    \node[right=1.5cm of s1] (dots) {$\cdots$};
+    \node[state, right=1.5cm of dots] (sn) {$s_{n-1}$};
+    \path (s0) edge[loop above] node {$a$} ()
+          (s0) edge node[above] {$b$} (s1)
+          (s1) edge[loop above] node {$a$} ()
+          (s1) edge node[above] {$b$} (dots)
+          (dots) edge node[above] {$b$} (sn)
+          (sn) edge[loop above] node {$a$} ()
+          (sn) edge[bend left=30] node[below] {$b$} (s0);
+\end{tikzpicture}
+\end{center}
+
+\end{document}
