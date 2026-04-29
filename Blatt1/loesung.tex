@@ -131,7 +131,7 @@ Seien $L_1 = \{w1 \mid w \in \{0,1\}^*\}$ und $L_2 = \{w0 \mid w \in \{0,1\}^*\}
     \node[state, initial, accepting] (s0) {$s_0$};
     \node[state, right=of s0] (s1) {$s_1$};
     \node[right=1.5cm of s1] (dots) {$\cdots$};
-    \node[state, right=1.5cm of dots] (sn) {$s_{n-1}$};
+    \node[state, right=1.5cm of dots, inner sep=1pt, font=\tiny] (sn) {$s_{{kgV}(k,m)\!-\!1}$};
     \path (s0) edge[loop above] node {$a$} ()
           (s0) edge node[above] {$b$} (s1)
           (s1) edge[loop above] node {$a$} ()
