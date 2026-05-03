@@ -1,0 +1,145 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
+
+\title{ETI -- Aufgabenblatt 1 \\ Hausaufgaben}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+%% ============================================================
+\section*{Aufgabe 1.5}
+
+\textbf{Sprache:} $L_1 = \{w \in \{a,b,c\}^* \mid \text{kein } c \text{ steht vor einem } a\}$.
+
+Das bedeutet: Sobald ein $c$ gelesen wurde, darf danach kein $a$ mehr kommen. Die Wörter bestehen also aus einem $\{a,b\}$-Präfix gefolgt von einem $\{b,c\}$-Suffix.
+
+\textbf{DFA:}
+
+\begin{center}
+\begin{tikzpicture}
+    \node[state, initial, accepting] (q0) {$q_0$};
+    \node[state, accepting, right=of q0] (q1) {$q_1$};
+    \node[state, right=of q1] (q2) {$q_2$};
+    \path (q0) edge[loop above] node {$a,b$} ()
+          (q0) edge node[above] {$c$} (q1)
+          (q1) edge[loop above] node {$b,c$} ()
+          (q1) edge node[above] {$a$} (q2)
+          (q2) edge[loop above] node {$a,b,c$} ();
+\end{tikzpicture}
+\end{center}
+
+\textbf{Korrektheit:}
+\begin{itemize}
+    \item $q_0$: Startzustand -- es wurde noch kein $c$ gelesen. Alle $a$'s und $b$'s sind erlaubt.
+    \item $q_1$: Es wurde mindestens ein $c$ gelesen, aber noch kein $a$ danach. Weitere $b$'s und $c$'s sind erlaubt.
+    \item $q_2$: Falle -- es wurde ein $a$ nach einem $c$ gelesen. Das Wort wird abgelehnt.
+\end{itemize}
+$q_0$ und $q_1$ sind akzeptierend, $q_2$ nicht. Der Automat akzeptiert genau die Wörter, in denen kein $c$ vor einem $a$ steht.
+
+%% ============================================================
+\section*{Aufgabe 1.6}
+
+\textbf{Sprache:} $L_2 = \{w \in \{a,\ldots,z\}^* \mid w \text{ enthält den Teilstring } eti\}$.
+
+\subsection*{1. DFA $M$:}
+
+Zustände: $q_0$ (Start), $q_1$ (``e'' gesehen), $q_2$ (``et'' gesehen), $q_3$ (``eti'' gesehen, akzeptierend).
+
+\begin{center}
+\begin{tikzpicture}[node distance=3cm, every edge/.append style={font=\small},
+    lbl/.style={fill=white, inner sep=2pt}]
+    \node[state, initial left] (q0) {$q_0$};
+    \node[state, below right=1.5cm and 3cm of q0] (q1) {$q_1$};
+    \node[state, above right=1.5cm and 3cm of q1] (q2) {$q_2$};
+    \node[state, accepting, below right=1.5cm and 3cm of q2] (q3) {$q_3$};
+    % Forward edges
+    \path (q0) edge node[lbl] {$e$} (q1)
+          (q1) edge node[lbl] {$t$} (q2)
+          (q2) edge node[lbl] {$i$} (q3);
+    % Self-loops
+    \path (q0) edge[loop above] node {$\Sigma \setminus \{e\}$} ()
+          (q1) edge[loop below] node {$e$} ()
+          (q3) edge[loop below] node {$\Sigma$} ();
+    % Back edges
+    \path (q1) edge[bend right=20] node[lbl] {$\Sigma \setminus \{e,t\}$} (q0);
+    \path (q2) edge[bend right=20] node[lbl] {$e$} (q1);
+    \path (q2) edge node[lbl] {$\Sigma \setminus \{e,i\}$} (q0);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{2. Beweis $L(M) = L_2$:}
+
+\textbf{``$L(M) \subseteq L_2$'':}
+Der Automat erreicht $q_3$ nur über den Pfad $q_0 \xrightarrow{e} q_1 \xrightarrow{t} q_2 \xrightarrow{i} q_3$.
+Da $q_3$ der einzige akzeptierende Zustand ist, muss jedes akzeptierte Wort irgendwann die Zeichenfolge $e$, $t$, $i$ hintereinander enthalten. Also enthält jedes akzeptierte Wort den Teilstring ``eti'', d.h.\ $L(M) \subseteq L_2$.
+
+\medskip
+\textbf{``$L_2 \subseteq L(M)$'':}
+Sei $w \in L_2$, d.h.\ $w$ enthält den Teilstring ``eti''. Wir schreiben $w = x \cdot e \cdot t \cdot i \cdot y$, wobei ``eti'' das erste Vorkommen ist.
+Wir zeigen per Induktion über die Position, dass der Automat beim Lesen der Zeichen $e$, $t$, $i$ des ersten Vorkommens die Zustände $q_1$, $q_2$, $q_3$ durchläuft:
+\begin{itemize}
+    \item Vor dem ersten ``eti'' kann der Automat nur in $q_0$, $q_1$ oder $q_2$ sein (nie $q_3$, da ``eti'' noch nicht vollständig gelesen wurde).
+    \item Liest der Automat das $e$ des Teilstrings: Falls er in $q_0$ ist, geht er nach $q_1$. Falls er in $q_1$ ist, bleibt er in $q_1$. Falls er in $q_2$ ist, geht er nach $q_1$. In jedem Fall ist er danach in $q_1$.
+    \item Liest er dann das $t$: Von $q_1$ geht er nach $q_2$.
+    \item Liest er dann das $i$: Von $q_2$ geht er nach $q_3$.
+\end{itemize}
+Da $q_3$ akzeptierend ist und eine Schleife mit $\Sigma$ hat, bleibt der Automat in $q_3$ und akzeptiert $w$. Also $L_2 \subseteq L(M)$.
+
+%% ============================================================
+\section*{Aufgabe 1.7}
+
+\textbf{Sprache:} $L_3 = \{s \in \{0,1\}^* \mid \sum_{i=1}^{|s|} s_i \cdot i \text{ ist gerade}\}$.
+
+Wir verfolgen die Parität der Summe. Sei $S_k = \sum_{i=1}^{k} s_i \cdot i$ der Wert nach dem Lesen von $k$ Zeichen. Beim Lesen des $(k+1)$-ten Zeichens $s_{k+1}$ ändert sich die Parität von $S$ genau dann, wenn $s_{k+1} \cdot (k+1)$ ungerade ist, also wenn $s_{k+1} = 1$ \emph{und} $k+1$ ungerade.
+
+Die Position $k+1$ ist ungerade für $k$ gerade und gerade für $k$ ungerade. Also brauchen wir als Zustand die Parität der Summe und die Parität der aktuellen Position.
+
+\textbf{Zustände:} $(p, g)$ wobei $p \in \{0,1\}$ die Parität der Summe ist ($0$ = gerade) und $g \in \{0,1\}$ die Parität der aktuellen Position (nächstes Zeichen hat Position $g+1$, also: $g=0$ bedeutet nächste Position ist ungerade).
+
+\textbf{Übergänge:} Beim Lesen von $s_{k+1}$ in Zustand $(p,g)$:
+\begin{itemize}
+    \item Lesen von $0$: Summe ändert sich nicht $\to (p,\, 1-g)$
+    \item Lesen von $1$: Summe ändert sich um $k+1$. Falls $g=0$ (Position ungerade): Parität kippt $\to (1-p,\, 1)$. Falls $g=1$ (Position gerade): Parität bleibt $\to (p,\, 0)$.
+\end{itemize}
+
+\textbf{DFA:}
+
+\begin{center}
+\begin{tikzpicture}[node distance=3cm]
+    \node[state, initial, accepting] (00) {$(0,0)$};
+    \node[state, accepting, right=of 00] (01) {$(0,1)$};
+    \node[state, below=2.5cm of 00] (10) {$(1,0)$};
+    \node[state, right=of 10] (11) {$(1,1)$};
+    % Lesen von 0: g kippt, p bleibt
+    \path (00) edge[bend left=15] node[above] {$0$} (01)
+          (01) edge[bend left=15] node[below] {$0$} (00)
+          (10) edge[bend left=15] node[above] {$0$} (11)
+          (11) edge[bend left=15] node[below] {$0$} (10);
+    % Lesen von 1: hängt von g ab
+    % g=0: p kippt, g -> 1
+    \path (00) edge node[right] {$1$} (11)
+          (10) edge node[left] {$1$} (01);
+    % g=1: p bleibt, g -> 0
+    \path (01) edge[loop right] node {$1$} ()
+          (11) edge[loop right] node {$1$} ();
+\end{tikzpicture}
+\end{center}
+
+Akzeptierende Zustände: $(0,0)$ und $(0,1)$ (Summe gerade).
+
+\textbf{Korrektheit:} Der Zustand $(p,g)$ speichert die Parität der bisherigen Summe ($p$) und die Parität der Anzahl bisher gelesener Zeichen ($g$), woraus sich die Parität der nächsten Position ergibt. Die Übergänge sind korrekt, da eine $1$ an ungerader Position die Parität der Summe kippt, und an gerader Position nicht. Eine $0$ ändert die Summe nie. Der Startzustand $(0,0)$ ist korrekt, da die leere Summe $0$ gerade ist und das erste Zeichen Position $1$ (ungerade) hat.
+
+\end{document}
