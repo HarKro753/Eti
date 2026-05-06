@@ -17,7 +17,11 @@
 \date{}
 
 \begin{document}
-\maketitle
+\raggedright
+\setlength{\parindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 1 \\ Hausaufgaben\par}
+\vspace{2em}
 
 %% ============================================================
 \section*{Aufgabe 1.5}
@@ -28,7 +32,7 @@ Das bedeutet: Sobald ein $c$ gelesen wurde, darf danach kein $a$ mehr kommen. Di
 
 \textbf{DFA:}
 
-\begin{center}
+\begin{flushleft}
 \begin{tikzpicture}
     \node[state, initial, accepting] (q0) {$q_0$};
     \node[state, accepting, right=of q0] (q1) {$q_1$};
@@ -39,7 +43,7 @@ Das bedeutet: Sobald ein $c$ gelesen wurde, darf danach kein $a$ mehr kommen. Di
           (q1) edge node[above] {$a$} (q2)
           (q2) edge[loop above] node {$a,b,c$} ();
 \end{tikzpicture}
-\end{center}
+\end{flushleft}
 
 \textbf{Korrektheit:}
 \begin{itemize}
@@ -58,7 +62,7 @@ $q_0$ und $q_1$ sind akzeptierend, $q_2$ nicht. Der Automat akzeptiert genau die
 
 Zustände: $q_0$ (Start), $q_1$ (``e'' gesehen), $q_2$ (``et'' gesehen), $q_3$ (``eti'' gesehen, akzeptierend).
 
-\begin{center}
+\begin{flushleft}
 \begin{tikzpicture}[node distance=3cm, every edge/.append style={font=\small},
     lbl/.style={fill=white, inner sep=2pt}]
     \node[state, initial left] (q0) {$q_0$};
@@ -78,25 +82,65 @@ Zustände: $q_0$ (Start), $q_1$ (``e'' gesehen), $q_2$ (``et'' gesehen), $q_3$ (
     \path (q2) edge[bend right=20] node[lbl] {$e$} (q1);
     \path (q2) edge node[lbl] {$\Sigma \setminus \{e,i\}$} (q0);
 \end{tikzpicture}
-\end{center}
+\end{flushleft}
 
 \subsection*{2. Beweis $L(M) = L_2$:}
 
+\textbf{Akzeptanz:}
+Sei $M = (Q,\Sigma,\delta,q_0,F)$ mit $\Sigma = \{a,\ldots,z\}$ und $F = \{q_3\}$.
+Sei außerdem $w = w_1 w_2 \cdots w_n$ eine Zeichenkette über $\Sigma$.
+$M$ akzeptiert $w$, falls eine Folge von Zuständen $r_0,r_1,\ldots,r_n \in Q$ existiert mit:
+\begin{itemize}
+    \item $r_0 = q_0$
+    \item $r_{i+1} = \delta(r_i,w_{i+1})$ für $i = 0,\ldots,n-1$
+    \item $r_n \in F$
+\end{itemize}
+
+\textbf{Erkannte Sprache:}
+\[
+L(M) = \{w \in \Sigma^* \mid M \text{ akzeptiert } w\}.
+\]
+
+\textbf{Zu zeigen:} $L(M) = L_2$.
+
+\medskip
 \textbf{``$L(M) \subseteq L_2$'':}
-Der Automat erreicht $q_3$ nur über den Pfad $q_0 \xrightarrow{e} q_1 \xrightarrow{t} q_2 \xrightarrow{i} q_3$.
-Da $q_3$ der einzige akzeptierende Zustand ist, muss jedes akzeptierte Wort irgendwann die Zeichenfolge $e$, $t$, $i$ hintereinander enthalten. Also enthält jedes akzeptierte Wort den Teilstring ``eti'', d.h.\ $L(M) \subseteq L_2$.
+Sei $w \in L(M)$. Dann akzeptiert $M$ das Wort $w$.
+Nach Definition gibt es also eine Zustandsfolge $r_0,r_1,\ldots,r_n$ mit $r_0=q_0$, $r_{i+1}=\delta(r_i,w_{i+1})$ und $r_n \in F$.
+Da $F=\{q_3\}$ gilt $r_n=q_3$.
+
+Der Zustand $q_3$ wird nur durch den Übergang
+\[
+q_0 \xrightarrow{e} q_1 \xrightarrow{t} q_2 \xrightarrow{i} q_3
+\]
+erreicht.
+Also muss in $w$ die Zeichenfolge ``eti'' vorkommen.
+Damit gilt $w \in L_2$ und somit $L(M) \subseteq L_2$.
 
 \medskip
 \textbf{``$L_2 \subseteq L(M)$'':}
-Sei $w \in L_2$, d.h.\ $w$ enthält den Teilstring ``eti''. Wir schreiben $w = x \cdot e \cdot t \cdot i \cdot y$, wobei ``eti'' das erste Vorkommen ist.
-Wir zeigen per Induktion über die Position, dass der Automat beim Lesen der Zeichen $e$, $t$, $i$ des ersten Vorkommens die Zustände $q_1$, $q_2$, $q_3$ durchläuft:
-\begin{itemize}
-    \item Vor dem ersten ``eti'' kann der Automat nur in $q_0$, $q_1$ oder $q_2$ sein (nie $q_3$, da ``eti'' noch nicht vollständig gelesen wurde).
-    \item Liest der Automat das $e$ des Teilstrings: Falls er in $q_0$ ist, geht er nach $q_1$. Falls er in $q_1$ ist, bleibt er in $q_1$. Falls er in $q_2$ ist, geht er nach $q_1$. In jedem Fall ist er danach in $q_1$.
-    \item Liest er dann das $t$: Von $q_1$ geht er nach $q_2$.
-    \item Liest er dann das $i$: Von $q_2$ geht er nach $q_3$.
-\end{itemize}
-Da $q_3$ akzeptierend ist und eine Schleife mit $\Sigma$ hat, bleibt der Automat in $q_3$ und akzeptiert $w$. Also $L_2 \subseteq L(M)$.
+Sei $w \in L_2$. Dann enthält $w$ den Teilstring ``eti''.
+Also lässt sich $w$ schreiben als
+\[
+w = x \cdot e \cdot t \cdot i \cdot y
+\]
+für $x,y \in \Sigma^*$.
+
+Nach dem Lesen von $x$ befindet sich $M$ in einem Zustand aus $Q$.
+Falls dieser Zustand bereits $q_3$ ist, wird $w$ akzeptiert, da $q_3$ für jedes Zeichen aus $\Sigma$ eine Schleife hat.
+Andernfalls ist der Zustand $q_0$, $q_1$ oder $q_2$.
+Beim Lesen des nächsten Zeichens $e$ geht $M$ in jedem dieser Fälle nach $q_1$.
+Danach gilt:
+\[
+q_1 \xrightarrow{t} q_2 \xrightarrow{i} q_3.
+\]
+Der Rest $y$ wird in $q_3$ gelesen, und wegen der $\Sigma$-Schleife bleibt $M$ in $q_3$.
+Also endet die Zustandsfolge in einem akzeptierenden Zustand.
+Damit akzeptiert $M$ das Wort $w$, also $w \in L(M)$.
+Somit gilt $L_2 \subseteq L(M)$.
+
+\medskip
+Aus $L(M) \subseteq L_2$ und $L_2 \subseteq L(M)$ folgt $L(M)=L_2$.
 
 %% ============================================================
 \section*{Aufgabe 1.7}
@@ -117,7 +161,7 @@ Die Position $k+1$ ist ungerade für $k$ gerade und gerade für $k$ ungerade. Al
 
 \textbf{DFA:}
 
-\begin{center}
+\begin{flushleft}
 \begin{tikzpicture}[node distance=3cm]
     \node[state, initial, accepting] (00) {$(0,0)$};
     \node[state, accepting, right=of 00] (01) {$(0,1)$};
@@ -136,10 +180,68 @@ Die Position $k+1$ ist ungerade für $k$ gerade und gerade für $k$ ungerade. Al
     \path (01) edge[loop right] node {$1$} ()
           (11) edge[loop right] node {$1$} ();
 \end{tikzpicture}
-\end{center}
+\end{flushleft}
 
-Akzeptierende Zustände: $(0,0)$ und $(0,1)$ (Summe gerade).
+\textbf{Formale Beschreibung:}
+\[
+M = (Q,\Sigma,\delta,(0,0),F)
+\]
+mit
+\[
+Q=\{(0,0),(0,1),(1,0),(1,1)\}, \quad \Sigma=\{0,1\}, \quad F=\{(0,0),(0,1)\}.
+\]
 
-\textbf{Korrektheit:} Der Zustand $(p,g)$ speichert die Parität der bisherigen Summe ($p$) und die Parität der Anzahl bisher gelesener Zeichen ($g$), woraus sich die Parität der nächsten Position ergibt. Die Übergänge sind korrekt, da eine $1$ an ungerader Position die Parität der Summe kippt, und an gerader Position nicht. Eine $0$ ändert die Summe nie. Der Startzustand $(0,0)$ ist korrekt, da die leere Summe $0$ gerade ist und das erste Zeichen Position $1$ (ungerade) hat.
+\textbf{Akzeptanz:}
+Sei $s = s_1s_2\cdots s_n$ eine Zeichenkette über $\Sigma$.
+$M$ akzeptiert $s$, falls eine Folge von Zuständen $r_0,r_1,\ldots,r_n \in Q$ existiert mit:
+\begin{itemize}
+    \item $r_0 = (0,0)$
+    \item $r_{i+1} = \delta(r_i,s_{i+1})$ für $i = 0,\ldots,n-1$
+    \item $r_n \in F$
+\end{itemize}
+
+\textbf{Erkannte Sprache:}
+\[
+L(M)=\{s \in \Sigma^* \mid M \text{ akzeptiert } s\}.
+\]
+
+\textbf{Zu zeigen:} $L(M)=L_3$.
+
+\medskip
+\textbf{Korrektheit:}
+Wir zeigen per Induktion über $k$, dass nach dem Lesen der ersten $k$ Zeichen gilt:
+\[
+r_k=(p,g) \quad \Longleftrightarrow \quad
+p \equiv \sum_{i=1}^{k} s_i \cdot i \pmod 2
+\text{ und } g \equiv k \pmod 2.
+\]
+
+\textbf{Induktionsanfang:}
+Für $k=0$ ist $r_0=(0,0)$.
+Die leere Summe ist $0$ und es wurden $0$ Zeichen gelesen.
+Also gilt die Behauptung.
+
+\textbf{Induktionsschritt:}
+Sei die Behauptung für $k$ richtig und sei $r_k=(p,g)$.
+Wir betrachten das nächste Zeichen $s_{k+1}$.
+\begin{itemize}
+    \item Falls $s_{k+1}=0$, ändert sich die Summe nicht. Nur die Parität der gelesenen Zeichen wechselt. Also geht $M$ nach $(p,1-g)$.
+    \item Falls $s_{k+1}=1$ und $g=0$, dann ist $k$ gerade und $k+1$ ungerade. Die Summe ändert ihre Parität, also geht $M$ nach $(1-p,1)$.
+    \item Falls $s_{k+1}=1$ und $g=1$, dann ist $k$ ungerade und $k+1$ gerade. Die Summe ändert ihre Parität nicht, also geht $M$ nach $(p,0)$.
+\end{itemize}
+Damit speichert der Zustand nach jedem gelesenen Präfix genau die Parität der Summe und die Parität der Anzahl gelesener Zeichen.
+
+Am Ende gilt also für $r_n=(p,g)$:
+\[
+p \equiv \sum_{i=1}^{n} s_i \cdot i \pmod 2.
+\]
+Der Automat akzeptiert genau dann, wenn $r_n \in F$ gilt.
+Da $F=\{(0,0),(0,1)\}$, ist das genau dann der Fall, wenn $p=0$ ist.
+Also akzeptiert $M$ genau die Wörter, für die
+\[
+\sum_{i=1}^{|s|} s_i \cdot i
+\]
+gerade ist.
+Damit gilt $L(M)=L_3$.
 
 \end{document}
