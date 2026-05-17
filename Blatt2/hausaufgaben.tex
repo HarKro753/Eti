@@ -1,0 +1,90 @@
+ 
+\documentclass[a4paper,12pt]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
+
+\title{ETI -- Aufgabenblatt 2 \\ Hausaufgaben}
+\author{}
+\date{}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 2 \\ Hausaufgaben\par}
+\vspace{2em}
+
+\section*{Aufgabe 2.5}
+
+Wir betrachten die Sprache
+\[
+B = \{a,b\}^* \circ \{a\} \circ \{a,b\}^2.
+\]
+
+\begin{enumerate}
+    \item Geben Sie einen NFA $M_1$ mit 4 Zuständen an, der $B$ erkennt.
+    \item Geben Sie einen DFA $M_2$ mit 8 Zuständen an, der $B$ erkennt.
+\end{enumerate}
+
+Begründen Sie jeweils kurz die Korrektheit.
+
+\section*{Aufgabe 2.6}
+
+Beweisen Sie, dass es keinen DFA mit 7 Zuständen gibt, der die Sprache $B$ aus der letzten Aufgabe erkennt.
+
+\medskip
+\textbf{Hinweis:} Beweisen Sie per Widerspruch. Betrachten Sie die Zustände, die ein solcher DFA nach Einlesen der Wörter $w \in \{a,b\}^3$ erreicht (Stichwort: Schubfachprinzip.) Was folgt dann für die Wörter $w \circ a$ bzw. $w \circ aa$?
+
+\section*{Aufgabe 2.7}
+
+Bestimmen Sie die Sprache $L$ über dem Alphabet $\Sigma = \{a,b,c\}$, die der folgende NFA akzeptiert. Geben Sie zudem eine kurze Begründung an.
+
+\begin{flushleft}
+\begin{tikzpicture}[node distance=2cm and 2.3cm, every edge/.append style={font=\small},
+    lbl/.style={fill=white, inner sep=2pt}]
+    \node[state, initial left] (q0) {$q_0$};
+    \node[state, above=2.3cm of q0] (a1) {$a_1$};
+    \node[state, above right=1.6cm and 1.7cm of a1] (a2) {$a_2$};
+    \node[state, accepting, right=2.6cm of a2] (a3) {$a_3$};
+    \node[state, right=2.6cm of q0] (b1) {$b_1$};
+    \node[state, right=2.6cm of b1] (b2) {$b_2$};
+    \node[state, accepting, right=2.6cm of b2] (b3) {$b_3$};
+    \node[state, accepting, below right=1.6cm and 1.5cm of q0] (c1) {$c_1$};
+
+    \path (q0) edge[bend left=25] node[lbl, left] {$c$} (a1)
+          (a1) edge[bend left=25] node[lbl, right] {$\varepsilon$} (q0)
+          (a1) edge node[lbl] {$a$} (a2)
+          (a2) edge node[lbl] {$b$} (a3)
+          (a3) edge[bend left=30] node[lbl] {$\varepsilon$} (a1);
+
+    \path (q0) edge node[lbl] {$\varepsilon$} (b1)
+          (b1) edge[loop above] node {$a,b,c$} ()
+          (b1) edge node[lbl] {$b$} (b2)
+          (b2) edge[loop above] node {$b$} ()
+          (b2) edge node[lbl] {$a,b,c$} (b3)
+          (b3) edge[bend left=25] node[lbl, below] {$a,c$} (b1);
+
+    \path (q0) edge[bend left=20] node[lbl] {$a$} (c1)
+          (c1) edge[bend left=20] node[lbl] {$\varepsilon$} (q0);
+\end{tikzpicture}
+\end{flushleft}
+
+\section*{Aufgabe 2.8}
+
+Aus einem Wort $w$ erhält man das umgekehrte Wort $w^R$, indem man die Zeichen von $w$ in umgekehrter Reihenfolge anordnet. Für jede Sprache $L$ definieren wir die umgekehrte Sprache $L^R$ als
+\[
+L^R = \{w^R \mid w \in L\}.
+\]
+Beweisen Sie: $L$ ist genau dann eine reguläre Sprache, wenn $L^R$ eine reguläre Sprache ist.
+
+\end{document}
