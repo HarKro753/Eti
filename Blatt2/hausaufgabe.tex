@@ -1,0 +1,295 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
+
+\newcommand{\defbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Definition / Vorgehen.}\par\smallskip
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\title{ETI -- Aufgabenblatt 2 \\ Hausaufgaben}
+\author{}
+\date{}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 2 \\ Hausaufgaben\par}
+\vspace{2em}
+
+\section*{Aufgabe 2.5}
+
+\defbox{
+Ein NFA akzeptiert ein Wort, wenn mindestens ein möglicher Berechnungspfad in einem akzeptierenden Zustand endet.
+Die Sprache
+\[
+B=\{a,b\}^* \circ \{a\} \circ \{a,b\}^2
+\]
+besteht genau aus den Wörtern über $\{a,b\}$, deren drittes Zeichen von rechts ein $a$ ist. Für den NFA kann man dieses $a$ nichtdeterministisch raten. Für den DFA muss man deterministisch die letzten drei gelesenen Zeichen speichern.
+}
+
+\subsection*{1. NFA $M_1$ mit 4 Zuständen}
+
+Der NFA rät beim Lesen eines $a$, dass dieses $a$ das drittletzte Zeichen ist, und liest danach noch genau zwei Zeichen.
+
+\[
+M_1=(Q,\Sigma,\delta,q_0,F)
+\]
+mit
+\[
+Q=\{q_0,q_1,q_2,q_3\}, \quad \Sigma=\{a,b\}, \quad F=\{q_3\}.
+\]
+Die Übergänge sind:
+\[
+\delta(q_0,a)=\{q_0,q_1\}, \quad
+\delta(q_0,b)=\{q_0\},
+\]
+\[
+\delta(q_1,a)=\delta(q_1,b)=\{q_2\}, \quad
+\delta(q_2,a)=\delta(q_2,b)=\{q_3\},
+\]
+alle anderen Übergänge führen in die leere Menge.
+
+\begin{flushleft}
+\begin{tikzpicture}[node distance=2.8cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (q1) {$q_1$};
+    \node[state, right=of q1] (q2) {$q_2$};
+    \node[state, accepting, right=of q2] (q3) {$q_3$};
+
+    \path (q0) edge[loop above] node {$a,b$} ()
+          (q0) edge node[above] {$a$} (q1)
+          (q1) edge node[above] {$a,b$} (q2)
+          (q2) edge node[above] {$a,b$} (q3);
+\end{tikzpicture}
+\end{flushleft}
+
+\textbf{Korrektheit:}
+Der Automat kann beliebig lange in $q_0$ bleiben. Sobald er ein $a$ liest, kann er nach $q_1$ wechseln und dieses $a$ als drittletztes Zeichen raten. Danach müssen noch genau zwei Zeichen gelesen werden, um in $q_3$ zu enden. Also akzeptiert $M_1$ genau die Wörter aus $\{a,b\}^*a\{a,b\}^2=B$.
+
+\subsection*{2. DFA $M_2$ mit 8 Zuständen}
+
+Der DFA speichert immer die letzten drei Zeichen. Am Anfang werden fehlende Zeichen links mit $b$ aufgefüllt, damit Wörter der Länge $0,1,2$ nicht versehentlich akzeptiert werden.
+
+\[
+M_2=(Q,\Sigma,\delta,bbb,F)
+\]
+mit
+\[
+Q=\{a,b\}^3, \quad \Sigma=\{a,b\},
+\]
+\[
+\delta(xyz,\sigma)=yz\sigma
+\quad\text{für }x,y,z,\sigma\in\{a,b\},
+\]
+und
+\[
+F=\{aaa,aab,aba,abb\}.
+\]
+
+\textbf{Übergangstabelle:}
+\[
+\begin{array}{c|cc}
+    & a & b\\ \hline
+aaa & aaa & aab\\
+aab & aba & abb\\
+aba & baa & bab\\
+abb & bba & bbb\\
+baa & aaa & aab\\
+bab & aba & abb\\
+bba & baa & bab\\
+bbb & bba & bbb
+\end{array}
+\]
+
+\textbf{Korrektheit:}
+Nach jedem gelesenen Wort $w$ enthält der Zustand die letzten drei Zeichen von $w$, wobei am Anfang links mit $b$ aufgefüllt wird. Ein Zustand ist genau dann akzeptierend, wenn sein erstes Zeichen $a$ ist. Das ist genau die Aussage, dass das drittletzte Zeichen des Eingabewortes ein $a$ ist. Also gilt $L(M_2)=B$.
+
+\section*{Aufgabe 2.6}
+
+\defbox{
+Das Schubfachprinzip besagt: Werden $8$ Objekte auf höchstens $7$ Fächer verteilt, dann liegen zwei verschiedene Objekte im selben Fach. Für einen DFA bedeutet das: Wenn $8$ verschiedene Wörter nach höchstens $7$ Zuständen führen, dann müssen zwei verschiedene Wörter denselben Zustand erreichen. Wörter, die denselben Zustand erreichen, können durch dieselbe Fortsetzung nicht mehr unterschieden werden.
+}
+
+Wir beweisen per Widerspruch. Angenommen, es gibt einen DFA
+\[
+M=(Q,\{a,b\},\delta,q_0,F)
+\]
+mit $|Q|=7$ und $L(M)=B$.
+
+Betrachte die $8$ Wörter aus $\{a,b\}^3$. Da $M$ nur $7$ Zustände hat, gibt es nach dem Schubfachprinzip zwei verschiedene Wörter
+\[
+x=x_1x_2x_3,\qquad y=y_1y_2y_3
+\]
+aus $\{a,b\}^3$, die nach dem Einlesen im selben Zustand landen:
+\[
+\delta^*(q_0,x)=\delta^*(q_0,y).
+\]
+
+Da $x\neq y$, unterscheiden sich die Wörter an mindestens einer Position.
+
+\begin{itemize}
+    \item Falls $x_1\neq y_1$, dann liegt genau eines von $x,y$ in $B$, denn bei Wörtern der Länge $3$ ist das erste Zeichen das drittletzte Zeichen.
+    \item Falls $x_2\neq y_2$, dann liegt genau eines von $xa,ya$ in $B$, denn in $xa$ bzw. $ya$ ist das zweite Zeichen von $x$ bzw. $y$ das drittletzte Zeichen.
+    \item Falls $x_3\neq y_3$, dann liegt genau eines von $xaa,yaa$ in $B$, denn in $xaa$ bzw. $yaa$ ist das dritte Zeichen von $x$ bzw. $y$ das drittletzte Zeichen.
+\end{itemize}
+
+In jedem Fall gibt es also eine Fortsetzung $z\in\{\varepsilon,a,aa\}$, so dass genau eines der Wörter $xz$ und $yz$ in $B$ liegt.
+Weil $x$ und $y$ aber denselben Zustand erreichen, gilt
+\[
+\delta^*(q_0,xz)=\delta^*(q_0,yz).
+\]
+Der DFA müsste also beide Wörter gleich behandeln. Das widerspricht $L(M)=B$.
+
+Damit kann es keinen DFA mit $7$ Zuständen geben, der $B$ erkennt.
+
+\section*{Aufgabe 2.7}
+
+\defbox{
+Ein NFA akzeptiert ein Wort, wenn es mindestens einen Pfad vom Startzustand zu einem akzeptierenden Zustand gibt, dessen Kantenbeschriftungen genau das Wort ergeben. $\varepsilon$-Übergänge verbrauchen kein Eingabezeichen. Um die Sprache zu bestimmen, zerlegt man die möglichen akzeptierenden Pfade in reguläre Ausdrücke.
+}
+
+Sei
+\[
+\Sigma=\{a,b,c\}.
+\]
+Der Startzustand ist $q_0$, die akzeptierenden Zustände sind $a_3,b_3,c_1$.
+
+Vom Zustand $q_0$ aus kann der Automat ohne endgültiges Akzeptieren wieder nach $q_0$ zurückkehren, indem er entweder
+\[
+a
+\]
+liest, oder indem er
+\[
+c(ab)^*
+\]
+liest. Setze daher
+\[
+R = a \cup c(ab)^*.
+\]
+Jeder akzeptierende Pfad besteht aus beliebig vielen solchen Rückkehr-Blöcken und endet dann in einem der akzeptierenden Teile.
+
+\medskip
+\textbf{Ende in $c_1$:}
+Der Pfad
+\[
+q_0 \xrightarrow{a} c_1
+\]
+liest das Wort $a$.
+
+\medskip
+\textbf{Ende in $a_3$:}
+Der obere Teil liest
+\[
+c(ab)^+.
+\]
+Denn von $q_0$ geht es mit $c$ nach $a_1$, anschließend muss mindestens einmal $ab$ gelesen werden, um in den akzeptierenden Zustand $a_3$ zu gelangen.
+
+\medskip
+\textbf{Ende in $b_3$:}
+Über den mittleren Teil kann der Automat zunächst beliebig viele Zeichen in $b_1$ lesen. Dann liest er ein $b$, danach beliebig viele weitere $b$ und anschließend ein beliebiges Zeichen aus $\Sigma$, um $b_3$ zu erreichen. Falls danach weitergelesen werden soll, muss mit $a$ oder $c$ nach $b_1$ zurückgegangen werden. Der dadurch beschriebene Ausdruck ist
+\[
+S=\Sigma^*bb^*\Sigma\bigl((a\cup c)\Sigma^*bb^*\Sigma\bigr)^*.
+\]
+
+Damit ist die akzeptierte Sprache
+\[
+\boxed{
+L
+=
+R^*\bigl(a \cup c(ab)^+ \cup S\bigr)
+}
+\]
+mit
+\[
+R=a\cup c(ab)^*
+\quad\text{und}\quad
+S=\Sigma^*bb^*\Sigma\bigl((a\cup c)\Sigma^*bb^*\Sigma\bigr)^*.
+\]
+
+\textbf{Begründung:}
+Die Faktoren aus $R^*$ beschreiben genau die Pfade, die wieder bei $q_0$ enden. Danach muss ein akzeptierender Zustand erreicht werden. Das geschieht entweder durch den einzelnen Übergang nach $c_1$, durch den oberen Teil nach $a_3$, oder durch den mittleren Teil nach $b_3$. Diese drei Möglichkeiten sind genau die drei Terme $a$, $c(ab)^+$ und $S$.
+
+\section*{Aufgabe 2.8}
+
+\defbox{
+Eine Sprache heißt regulär, wenn sie von einem DFA oder äquivalent von einem NFA erkannt wird. Für das Umkehren einer regulären Sprache verwendet man einen NFA: Man dreht alle Kanten um, macht die alten Endzustände zu möglichen Startzuständen und den alten Startzustand zum einzigen Endzustand.
+}
+
+Zu zeigen ist:
+\[
+L \text{ ist regulär}
+\quad\Longleftrightarrow\quad
+L^R \text{ ist regulär}.
+\]
+
+\subsection*{``$\Rightarrow$''}
+
+Sei $L$ regulär. Dann gibt es einen NFA
+\[
+N=(Q,\Sigma,\delta,q_0,F)
+\]
+mit $L(N)=L$.
+
+Wir konstruieren einen NFA
+\[
+N^R=(Q\cup\{q_s\},\Sigma,\delta_R,q_s,\{q_0\})
+\]
+für $L^R$. Dabei ist $q_s$ ein neuer Startzustand.
+
+Die Übergänge von $N^R$ sind:
+\begin{itemize}
+    \item Für jeden alten Endzustand $f\in F$ gibt es einen $\varepsilon$-Übergang
+    \[
+    q_s \xrightarrow{\varepsilon} f.
+    \]
+    \item Für jeden Übergang $p\xrightarrow{x}q$ in $N$ mit $x\in\Sigma\cup\{\varepsilon\}$ gibt es in $N^R$ den umgedrehten Übergang
+    \[
+    q\xrightarrow{x}p.
+    \]
+\end{itemize}
+
+Ein akzeptierender Pfad in $N$ mit Beschriftung
+\[
+w=w_1w_2\cdots w_n
+\]
+von $q_0$ zu einem Zustand $f\in F$ wird dadurch zu einem Pfad in $N^R$ von $q_s$ über $f$ nach $q_0$ mit Beschriftung
+\[
+w_n\cdots w_2w_1=w^R.
+\]
+Also erkennt $N^R$ genau $L^R$. Damit ist $L^R$ regulär.
+
+\subsection*{``$\Leftarrow$''}
+
+Sei nun $L^R$ regulär. Nach der gerade bewiesenen Richtung ist dann auch
+\[
+(L^R)^R
+\]
+regulär. Für jedes Wort gilt $(w^R)^R=w$, also ist
+\[
+(L^R)^R=L.
+\]
+Damit ist auch $L$ regulär.
+
+\medskip
+Folglich gilt: $L$ ist genau dann regulär, wenn $L^R$ regulär ist.
+
+\end{document}
