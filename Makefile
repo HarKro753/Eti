@@ -1,8 +1,8 @@
 LATEXMK ?= latexmk
 BUILD_DIR := .latex-build
 
-TEXFILES := $(shell find Blatt1 Blatt2 -name '*.tex')
-PDFS := $(patsubst %.tex,%.pdf,$(TEXFILES))
+TEXFILES := $(patsubst ./%,%,$(shell find . -path './.git' -prune -o -path './$(BUILD_DIR)' -prune -o -type f -name '*.tex' -print))
+PDFS := $(TEXFILES:.tex=.pdf)
 
 .PHONY: all clean list
 
@@ -10,8 +10,7 @@ all: $(PDFS)
 
 %.pdf: %.tex
 	@mkdir -p $(BUILD_DIR)/$(dir $<)
-	$(LATEXMK) -pdf -interaction=nonstopmode -halt-on-error -outdir=$(BUILD_DIR)/$(dir $<) $<
-	@cp $(BUILD_DIR)/$@ $@
+	$(LATEXMK) -pdf -interaction=nonstopmode -halt-on-error -outdir=$(dir $@) -auxdir=$(BUILD_DIR)/$(dir $<) $<
 
 list:
 	@printf '%s\n' $(PDFS)
