@@ -48,25 +48,8 @@ besteht genau aus den Wörtern über $\{a,b\}$, deren drittes Zeichen von rechts
 
 \subsection*{1. NFA $M_1$ mit 4 Zuständen}
 
-Der NFA rät beim Lesen eines $a$, dass dieses $a$ das drittletzte Zeichen ist, und liest danach noch genau zwei Zeichen.
-
-\[
-M_1=(Q,\Sigma,\delta,q_0,F)
-\]
-mit
-\[
-Q=\{q_0,q_1,q_2,q_3\}, \quad \Sigma=\{a,b\}, \quad F=\{q_3\}.
-\]
-Die Übergänge sind:
-\[
-\delta(q_0,a)=\{q_0,q_1\}, \quad
-\delta(q_0,b)=\{q_0\},
-\]
-\[
-\delta(q_1,a)=\delta(q_1,b)=\{q_2\}, \quad
-\delta(q_2,a)=\delta(q_2,b)=\{q_3\},
-\]
-alle anderen Übergänge führen in die leere Menge.
+Der folgende NFA rät beim Lesen eines $a$, dass dieses $a$ das drittletzte Zeichen ist,
+und liest danach noch genau zwei Zeichen.
 
 \begin{flushleft}
 \begin{tikzpicture}[node distance=2.8cm]
@@ -87,38 +70,38 @@ Der Automat kann beliebig lange in $q_0$ bleiben. Sobald er ein $a$ liest, kann 
 
 \subsection*{2. DFA $M_2$ mit 8 Zuständen}
 
-Der DFA speichert immer die letzten drei Zeichen. Am Anfang werden fehlende Zeichen links mit $b$ aufgefüllt, damit Wörter der Länge $0,1,2$ nicht versehentlich akzeptiert werden.
+Der folgende DFA speichert immer die letzten drei Zeichen. Am Anfang werden fehlende Zeichen links mit $b$ aufgefüllt, damit Wörter der Länge $0,1,2$ nicht versehentlich akzeptiert werden.
 
-\[
-M_2=(Q,\Sigma,\delta,bbb,F)
-\]
-mit
-\[
-Q=\{a,b\}^3, \quad \Sigma=\{a,b\},
-\]
-\[
-\delta(xyz,\sigma)=yz\sigma
-\quad\text{für }x,y,z,\sigma\in\{a,b\},
-\]
-und
-\[
-F=\{aaa,aab,aba,abb\}.
-\]
+\begin{center}
+\begin{tikzpicture}[scale=0.82, transform shape]
+    \node[state, accepting] (aaa) at (0,0) {$aaa$};
+    \node[state, accepting] (aab) at (3,0) {$aab$};
+    \node[state, accepting] (aba) at (6,0) {$aba$};
+    \node[state, accepting] (abb) at (9,0) {$abb$};
 
-\textbf{Übergangstabelle:}
-\[
-\begin{array}{c|cc}
-    & a & b\\ \hline
-aaa & aaa & aab\\
-aab & aba & abb\\
-aba & baa & bab\\
-abb & bba & bbb\\
-baa & aaa & aab\\
-bab & aba & abb\\
-bba & baa & bab\\
-bbb & bba & bbb
-\end{array}
-\]
+    \node[state] (baa) at (0,-3) {$baa$};
+    \node[state] (bab) at (3,-3) {$bab$};
+    \node[state] (bba) at (6,-3) {$bba$};
+    \node[state, initial] (bbb) at (9,-3) {$bbb$};
+
+    \path (aaa) edge[loop above] node {$a$} ()
+          (aaa) edge node[above] {$b$} (aab)
+          (aab) edge node[above] {$a$} (aba)
+          (aab) edge[bend left=18] node[above] {$b$} (abb)
+          (aba) edge[bend right=18] node[below,sloped] {$a$} (baa)
+          (aba) edge node[above,sloped] {$b$} (bab)
+          (abb) edge node[above,sloped] {$a$} (bba)
+          (abb) edge node[right] {$b$} (bbb)
+          (baa) edge node[left] {$a$} (aaa)
+          (baa) edge node[below,sloped] {$b$} (aab)
+          (bab) edge node[below,sloped] {$a$} (aba)
+          (bab) edge node[right] {$b$} (abb)
+          (bba) edge[bend left=12] node[below] {$a$} (baa)
+          (bba) edge[bend left=12] node[above] {$b$} (bab)
+          (bbb) edge node[below] {$a$} (bba)
+          (bbb) edge[loop below] node {$b$} ();
+\end{tikzpicture}
+\end{center}
 
 \textbf{Korrektheit:}
 Nach jedem gelesenen Wort $w$ enthält der Zustand die letzten drei Zeichen von $w$, wobei am Anfang links mit $b$ aufgefüllt wird. Ein Zustand ist genau dann akzeptierend, wenn sein erstes Zeichen $a$ ist. Das ist genau die Aussage, dass das drittletzte Zeichen des Eingabewortes ein $a$ ist. Also gilt $L(M_2)=B$.
@@ -164,7 +147,7 @@ Damit kann es keinen DFA mit $7$ Zuständen geben, der $B$ erkennt.
 \section*{Aufgabe 2.7}
 
 \defbox{
-Ein NFA akzeptiert ein Wort, wenn es mindestens einen Pfad vom Startzustand zu einem akzeptierenden Zustand gibt, dessen Kantenbeschriftungen genau das Wort ergeben. $\varepsilon$-Übergänge verbrauchen kein Eingabezeichen. Um die Sprache zu bestimmen, zerlegt man die möglichen akzeptierenden Pfade in reguläre Ausdrücke.
+Ein NFA akzeptiert ein Wort, wenn es mindestens einen Pfad vom Startzustand zu einem akzeptierenden Zustand gibt, dessen Kantenbeschriftungen genau das Wort ergeben. $\varepsilon$-Übergänge verbrauchen kein Eingabezeichen. Hier zerlegen wir den Automaten in drei Teilautomaten: den oberen, den mittleren und den unteren Ast.
 }
 
 Sei
@@ -173,60 +156,88 @@ Sei
 \]
 Der Startzustand ist $q_0$, die akzeptierenden Zustände sind $a_3,b_3,c_1$.
 
-Vom Zustand $q_0$ aus kann der Automat ohne endgültiges Akzeptieren wieder nach $q_0$ zurückkehren, indem er entweder
-\[
-a
-\]
-liest, oder indem er
-\[
-c(ab)^*
-\]
-liest. Setze daher
-\[
-R = a \cup c(ab)^*.
-\]
-Jeder akzeptierende Pfad besteht aus beliebig vielen solchen Rückkehr-Blöcken und endet dann in einem der akzeptierenden Teile.
+\begin{center}
+\begin{tikzpicture}[node distance=2.2cm and 2.6cm]
+    \node[state, initial] (q0) {$q_0$};
+
+    \node[state, above=of q0] (a1) {$a_1$};
+    \node[state, right=of a1] (a2) {$a_2$};
+    \node[state, accepting, right=of a2] (a3) {$a_3$};
+
+    \node[state, right=of q0] (b1) {$b_1$};
+    \node[state, right=of b1] (b2) {$b_2$};
+    \node[state, accepting, right=of b2] (b3) {$b_3$};
+
+    \node[state, accepting, below=of q0] (c1) {$c_1$};
+
+    \path (q0) edge[bend left=20] node[left] {$c$} (a1)
+          (a1) edge node[above] {$a$} (a2)
+          (a2) edge node[above] {$b$} (a3)
+          (a1) edge[bend left=20] node[right] {$\varepsilon$} (q0)
+          (a3) edge[out=-120,in=20] node[pos=0.63,above] {$\varepsilon$} (q0)
+          (q0) edge node[above] {$\varepsilon$} (b1)
+          (b1) edge[loop above] node {$a,b,c$} ()
+          (b1) edge node[above] {$b$} (b2)
+          (b2) edge[loop above] node {$b$} ()
+          (b2) edge node[above] {$a,b,c$} (b3)
+          (b3) edge[bend left=24] node[below] {$a,c$} (b1)
+          (q0) edge[out=-110,in=110] node[pos=0.45,left] {$a$} (c1)
+          (c1) edge[out=70,in=-70] node[pos=0.45,right] {$\varepsilon$} (q0);
+\end{tikzpicture}
+\end{center}
+
+Wir betrachten den NFA als Zusammensetzung von drei Teilautomaten, die vom Auswahlzustand $q_0$ aus erreichbar sind.
 
 \medskip
-\textbf{Ende in $c_1$:}
-Der Pfad
+\textbf{Unterer Teilautomat:}
+Der untere Ast liest genau
 \[
-q_0 \xrightarrow{a} c_1
+C=a.
 \]
-liest das Wort $a$.
+Wenn der Automat in $c_1$ endet, wird akzeptiert. Über den $\varepsilon$-Übergang kann er aber auch wieder nach $q_0$ zurückkehren.
 
 \medskip
-\textbf{Ende in $a_3$:}
-Der obere Teil liest
+\textbf{Oberer Teilautomat:}
+Der obere Ast beginnt mit $c$. Danach kann er sofort per $\varepsilon$ nach $q_0$ zurückkehren oder mindestens einmal den Block $ab$ lesen und in $a_3$ akzeptieren. Damit gilt:
 \[
-c(ab)^+.
+A_0=c(ab)^*
+\quad\text{als Rückkehr nach }q_0,
 \]
-Denn von $q_0$ geht es mit $c$ nach $a_1$, anschließend muss mindestens einmal $ab$ gelesen werden, um in den akzeptierenden Zustand $a_3$ zu gelangen.
+\[
+A_1=c(ab)^+
+\quad\text{als akzeptierender Abschluss in }a_3.
+\]
 
 \medskip
-\textbf{Ende in $b_3$:}
-Über den mittleren Teil kann der Automat zunächst beliebig viele Zeichen in $b_1$ lesen. Dann liest er ein $b$, danach beliebig viele weitere $b$ und anschließend ein beliebiges Zeichen aus $\Sigma$, um $b_3$ zu erreichen. Falls danach weitergelesen werden soll, muss mit $a$ oder $c$ nach $b_1$ zurückgegangen werden. Der dadurch beschriebene Ausdruck ist
+\textbf{Mittlerer Teilautomat:}
+Der mittlere Ast liest zuerst beliebig viele Zeichen, dann mindestens ein $b$ und danach noch ein beliebiges Zeichen aus $\Sigma$. Danach darf er mit $a$ oder $c$ wieder nach $b_1$ zurückspringen und denselben Teil erneut durchlaufen. Also ist
 \[
-S=\Sigma^*bb^*\Sigma\bigl((a\cup c)\Sigma^*bb^*\Sigma\bigr)^*.
+B=\Sigma^*bb^*\Sigma\bigl((a\cup c)\Sigma^*bb^*\Sigma\bigr)^*.
 \]
 
-Damit ist die akzeptierte Sprache
+Vor dem letzten akzeptierenden Teil darf der Automat beliebig oft über den unteren oder oberen Ast nach $q_0$ zurückkehren. Die möglichen Rückkehr-Blöcke sind also
+\[
+R=C\cup A_0=a\cup c(ab)^*.
+\]
+Am Ende muss der Pfad in einem der drei akzeptierenden Teilautomaten enden. Daher ist die akzeptierte Sprache
 \[
 \boxed{
-L
-=
-R^*\bigl(a \cup c(ab)^+ \cup S\bigr)
+L=
+R^*\bigl(C\cup A_1\cup B\bigr)
 }
 \]
-mit
+also
 \[
-R=a\cup c(ab)^*
-\quad\text{und}\quad
-S=\Sigma^*bb^*\Sigma\bigl((a\cup c)\Sigma^*bb^*\Sigma\bigr)^*.
+\boxed{
+L=
+\bigl(a\cup c(ab)^*\bigr)^*
+\left(
+a
+\cup c(ab)^+
+\cup \Sigma^*bb^*\Sigma\bigl((a\cup c)\Sigma^*bb^*\Sigma\bigr)^*
+\right).
+}
 \]
-
-\textbf{Begründung:}
-Die Faktoren aus $R^*$ beschreiben genau die Pfade, die wieder bei $q_0$ enden. Danach muss ein akzeptierender Zustand erreicht werden. Das geschieht entweder durch den einzelnen Übergang nach $c_1$, durch den oberen Teil nach $a_3$, oder durch den mittleren Teil nach $b_3$. Diese drei Möglichkeiten sind genau die drei Terme $a$, $c(ab)^+$ und $S$.
 
 \section*{Aufgabe 2.8}
 
