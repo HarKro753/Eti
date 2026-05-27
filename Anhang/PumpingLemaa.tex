@@ -1,0 +1,134 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{positioning,decorations.pathreplacing}
+
+\newcommand{\methodbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Methodik / Definition.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\block}[4]{%
+    \draw[fill=#4!25] (#1,0) rectangle ++(#2,0.65);
+    \node at ({#1 + #2/2},0.325) {#3};
+}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+
+{\LARGE\bfseries Pumping-Lemma: einfaches Beispiel\par}
+\vspace{1.5em}
+
+\methodbox{
+Pumping-Lemma zum Nachweis von Nicht-Regularität:
+\begin{enumerate}
+    \item Annahme: Die Sprache ist regulär. Sei $p$ die Pumping-Länge.
+    \item Wähle ein Wort $s$ aus der Sprache mit $|s|\ge p$.
+    \item Betrachte eine beliebige Zerlegung $s=xyz$ mit $|y|>0$ und $|xy|\le p$.
+    \item Zeige für ein geeignetes $i$ meistens $i=0$ oder $i=2$, dass $xy^iz$ nicht mehr in der Sprache liegt.
+\end{enumerate}
+Das ist ein Widerspruch. Also ist die Sprache nicht regulär.
+}
+
+Wir betrachten die Sprache
+\[
+L=\{w\in\{a,b\}^*\mid |w|_a>|w|_b\}.
+\]
+Dabei bezeichnet $|w|_a$ die Anzahl der $a$'s in $w$ und $|w|_b$ die Anzahl der $b$'s in $w$.
+
+\medskip
+\textbf{Beweis.}
+\begin{enumerate}
+    \item Annahme: $L$ ist regulär. Sei $p$ die Pumping-Länge.
+
+    \item Wähle
+    \[
+        s=a^{p+1}b^p.
+    \]
+    Dann gilt
+    \[
+        |s|_a=p+1>p=|s|_b,
+    \]
+    also ist $s\in L$. Außerdem gilt $|s|=2p+1\ge p$.
+
+    \begin{center}
+    \begin{tikzpicture}[x=0.9cm,y=0.9cm]
+        \block{0}{5}{$a^{p+1}$}{blue}
+        \block{5}{4}{$b^p$}{red}
+        \draw[decorate,decoration={brace,mirror,amplitude=5pt}] (0,-0.1) -- (5,-0.1)
+            node[midway,below=7pt] {$p+1$ viele $a$'s};
+        \draw[decorate,decoration={brace,mirror,amplitude=5pt}] (5,-0.1) -- (9,-0.1)
+            node[midway,below=7pt] {$p$ viele $b$'s};
+    \end{tikzpicture}
+    \end{center}
+
+    \item Sei $s=xyz$ eine Zerlegung gemäß Pumping-Lemma, also
+    \[
+        |y|>0
+        \qquad\text{und}\qquad
+        |xy|\le p.
+    \]
+    Weil die ersten $p$ Zeichen von $s$ alle $a$ sind, liegt $y$ vollständig im ersten $a$-Block.
+    Also gilt
+    \[
+        y=a^k
+        \qquad\text{für ein } k\ge 1.
+    \]
+
+    \begin{center}
+    \begin{tikzpicture}[x=0.9cm,y=0.9cm]
+        \block{0}{1.6}{$x$}{gray}
+        \block{1.6}{1.4}{$y=a^k$}{green}
+        \block{3}{2}{$a^{p+1-k-|x|}$}{blue}
+        \block{5}{4}{$b^p$}{red}
+        \draw[decorate,decoration={brace,mirror,amplitude=5pt}] (0,-0.1) -- (5,-0.1)
+            node[midway,below=7pt] {nur $a$'s};
+    \end{tikzpicture}
+    \end{center}
+
+    \item Wir pumpen mit $i=0$, also entfernen wir $y$:
+    \[
+        xy^0z=xz=a^{p+1-k}b^p.
+    \]
+
+    \item Jetzt gilt
+    \[
+        |xz|_a=p+1-k
+        \qquad\text{und}\qquad
+        |xz|_b=p.
+    \]
+    Wegen $k\ge 1$ folgt
+    \[
+        p+1-k\le p.
+    \]
+    Also hat $xz$ nicht mehr mehr $a$'s als $b$'s:
+    \[
+        xz\notin L.
+    \]
+
+    \begin{center}
+    \begin{tikzpicture}[x=0.9cm,y=0.9cm]
+        \block{0}{4}{$a^{p+1-k}$}{blue}
+        \block{4}{4}{$b^p$}{red}
+        \node[below=0.65cm] at (2,0) {$p+1-k\le p$ viele $a$'s};
+        \node[below=0.65cm] at (6,0) {$p$ viele $b$'s};
+    \end{tikzpicture}
+    \end{center}
+
+    Das ist ein Widerspruch zum Pumping-Lemma.
+\end{enumerate}
+
+Folglich ist $L$ nicht regulär.
+
+\end{document}
