@@ -3,6 +3,27 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
+
+\newcommand{\methodbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Methodik / Definition.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
 
 \title{ETI -- Aufgabenblatt 3 \\ Hausaufgaben}
 \author{}
@@ -17,81 +38,93 @@
 
 \section*{Aufgabe 3.6}
 
-Wir verwenden beim Eliminieren eines Zustands $x$ die Formel
+\methodbox{
+Ein GNFA hat zwischen je zwei Zuständen genau eine Kante, deren Beschriftung ein regulärer Ausdruck ist.
+Nicht vorhandene Kanten haben Beschriftung $\emptyset$.
+
+\smallskip
+Beim Eliminieren eines Zustands $x$ ersetzt man für alle übrigen Zustände $p,q$ die Kante
 \[
-    \gamma'(p,q)
-    =
     \gamma(p,q)
-    \cup
-    \gamma(p,x)\gamma(x,x)^*\gamma(x,q).
+    \quad\text{durch}\quad
+    \gamma(p,q)\cup \gamma(p,x)\gamma(x,x)^*\gamma(x,q).
 \]
+Danach wird $x$ entfernt. Man wiederholt das, bis nur noch Start- und Endzustand übrig sind.
+Die Beschriftung der Kante vom Start- zum Endzustand ist der gesuchte reguläre Ausdruck.
+}
+
 Alle nicht eingezeichneten Kanten haben Beschriftung $\emptyset$.
 
 \medskip
 \textbf{Start-GNFA.}
-Die nichtleeren Kanten sind
-\[
-\begin{aligned}
-\gamma(q_0,q_1)&=\varepsilon, &
-\gamma(q_1,q_4)&=\varepsilon, &
-\gamma(q_1,q_2)&=0,\\
-\gamma(q_2,q_1)&=1, &
-\gamma(q_2,q_3)&=11, &
-\gamma(q_3,q_1)&=00.
-\end{aligned}
-\]
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.5cm and 2.6cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (q1) {$q_1$};
+    \node[state, right=of q1] (q2) {$q_2$};
+    \node[state, below=of q2] (q3) {$q_3$};
+    \node[state, accepting, above=of q2] (q4) {$q_4$};
+
+    \path (q0) edge node[above] {$\varepsilon$} (q1)
+          (q1) edge node[above] {$0$} (q2)
+          (q1) edge node[above,sloped] {$\varepsilon$} (q4)
+          (q2) edge[bend left=18] node[below] {$1$} (q1)
+          (q2) edge node[right] {$11$} (q3)
+          (q3) edge[bend left=14] node[below,sloped] {$00$} (q1);
+\end{tikzpicture}
+\end{center}
 
 \medskip
 \textbf{Eliminiere $q_1$.}
-Da $\gamma(q_1,q_1)=\emptyset$ gilt $\gamma(q_1,q_1)^*=\varepsilon$.
-Es entstehen die folgenden nichtleeren Kanten:
-\[
-\begin{aligned}
-\gamma(q_0,q_2)&=0, &
-\gamma(q_0,q_4)&=\varepsilon,\\
-\gamma(q_2,q_2)&=10, &
-\gamma(q_2,q_3)&=11, &
-\gamma(q_2,q_4)&=1,\\
-\gamma(q_3,q_2)&=000, &
-\gamma(q_3,q_4)&=00.
-\end{aligned}
-\]
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.5cm and 2.8cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (q2) {$q_2$};
+    \node[state, right=of q2] (q3) {$q_3$};
+    \node[state, accepting, above=of q2] (q4) {$q_4$};
+
+    \path (q0) edge node[above] {$0$} (q2)
+          (q0) edge[bend left=25] node[above,sloped] {$\varepsilon$} (q4)
+          (q2) edge[loop below] node {$10$} ()
+          (q2) edge[bend left=14] node[above] {$11$} (q3)
+          (q2) edge node[right] {$1$} (q4)
+          (q3) edge[bend left=14] node[below] {$000$} (q2)
+          (q3) edge[bend right=18] node[right] {$00$} (q4);
+\end{tikzpicture}
+\end{center}
 
 \medskip
 \textbf{Eliminiere $q_2$.}
-Jetzt ist $\gamma(q_2,q_2)=10$. Damit erhalten wir:
-\[
-\begin{aligned}
-\gamma(q_0,q_3)
-    &=0(10)^*11,\\
-\gamma(q_0,q_4)
-    &=\varepsilon \cup 0(10)^*1,\\
-\gamma(q_3,q_3)
-    &=000(10)^*11,\\
-\gamma(q_3,q_4)
-    &=00 \cup 000(10)^*1.
-\end{aligned}
-\]
+
+\begin{center}
+\begin{tikzpicture}[node distance=3cm and 4.4cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (q3) {$q_3$};
+    \node[state, accepting, above=of q3] (q4) {$q_4$};
+
+    \path (q0) edge node[below] {$0(10)^*11$} (q3)
+          (q0) edge[bend left=24] node[above,sloped] {$\varepsilon\cup0(10)^*1$} (q4)
+          (q3) edge[loop below] node {$000(10)^*11$} ()
+          (q3) edge node[right] {$00\cup000(10)^*1$} (q4);
+\end{tikzpicture}
+\end{center}
 
 \medskip
 \textbf{Eliminiere $q_3$.}
-Der gesuchte reguläre Ausdruck ist die neue Kante von $q_0$ nach $q_4$:
-\[
-\begin{aligned}
-R
-&=
-\gamma(q_0,q_4)
-\cup
-\gamma(q_0,q_3)\gamma(q_3,q_3)^*\gamma(q_3,q_4)\\
-&=
-\left(\varepsilon \cup 0(10)^*1\right)
-\cup
-0(10)^*11
-\left(000(10)^*11\right)^*
-\left(00 \cup 000(10)^*1\right).
-\end{aligned}
-\]
-Also ist
+
+\begin{center}
+\begin{tikzpicture}[node distance=7.6cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, accepting, right=of q0] (q4) {$q_4$};
+
+    \path (q0) edge node[above] {$\scriptstyle
+        (\varepsilon\cup0(10)^*1)\cup0(10)^*11
+        (000(10)^*11)^*(00\cup000(10)^*1)$} (q4);
+\end{tikzpicture}
+\end{center}
+
 \[
 \boxed{
 R=
@@ -105,6 +138,17 @@ R=
 
 \section*{Aufgabe 3.7}
 
+\methodbox{
+Pumping-Lemma zum Nachweis von Nicht-Regularität:
+\begin{enumerate}
+    \item Annahme: Die Sprache ist regulär. Sei $p$ die Pumping-Länge.
+    \item Wähle ein Wort $s$ aus der Sprache mit $|s|\ge p$.
+    \item Betrachte eine beliebige Zerlegung $s=xyz$ mit $|y|>0$ und $|xy|\le p$.
+    \item Zeige für ein geeignetes $i$ meistens $i=0$ oder $i=2$, dass $xy^iz$ nicht mehr in der Sprache liegt.
+\end{enumerate}
+Das ist ein Widerspruch. Also ist die Sprache nicht regulär.
+}
+
 Sei
 \[
 A=\{w\#1^k \mid w\in\{0,1\}^*,\; w \text{ codiert die Zahl } k\}.
@@ -113,43 +157,53 @@ Wir zeigen mit dem Pumping-Lemma, dass $A$ nicht regulär ist.
 
 \medskip
 \textbf{Beweis.}
-Annahme: $A$ ist regulär. Sei $p$ die Pumping-Länge.
+\begin{enumerate}
+    \item Annahme: $A$ ist regulär. Sei $p$ die Pumping-Länge.
 
-Wähle
-\[
-    s = 10^p \# 1^{2^p}.
-\]
-Das Wort $10^p$ codiert die Zahl $2^p$, also gilt $s\in A$.
-Außerdem ist $|s|\ge p$.
+    \item Wähle
+    \[
+        s=10^p\#1^{2^p}.
+    \]
+    Das Wort $10^p$ codiert die Zahl $2^p$, also gilt $s\in A$.
+    Außerdem ist $|s|\ge p$.
 
-Sei nun $s=xyz$ eine Zerlegung mit
-\[
-    |y|>0
-    \qquad\text{und}\qquad
-    |xy|\le p.
-\]
-Dann liegt $y$ vollständig im vorderen Binärteil $10^p$, also noch vor dem Zeichen $\#$.
-Setze $k=|y|\ge 1$.
+    \item Sei $s=xyz$ eine Zerlegung gemäß Pumping-Lemma, also
+    \[
+        |y|>0
+        \qquad\text{und}\qquad
+        |xy|\le p.
+    \]
+    Dann liegt $y$ vollständig im vorderen Binärteil $10^p$, also noch vor dem Zeichen $\#$.
+    Setze $k=|y|\ge 1$.
 
-Wir pumpen mit $i=0$, betrachten also $xz$.
-Dabei bleibt der rechte Teil $\#1^{2^p}$ unverändert, aber der Binärcode links von $\#$ verändert sich.
+    \item Pumpe mit $i=0$. Dann bleibt der rechte Teil $\#1^{2^p}$ unverändert, aber der Binärcode links von $\#$ wird kürzer.
 
-Es gibt zwei Fälle:
-\begin{itemize}
-    \item Falls $y$ die führende $1$ enthält, besteht der neue Binärteil nur noch aus Nullen. Er codiert also $0$, aber rechts stehen weiterhin $2^p$ Einsen.
-    \item Falls $y$ nur aus Nullen besteht, wird aus $10^p$ ein Wort der Form $10^{p-k}$. Dieses codiert $2^{p-k}$, und wegen $k\ge 1$ gilt $2^{p-k}\ne 2^p$.
-\end{itemize}
+    Falls $y$ die führende $1$ enthält, besteht der neue Binärteil nur noch aus Nullen.
+    Er codiert also nicht mehr $2^p$.
+    Falls $y$ nur aus Nullen besteht, wird aus $10^p$ ein Wort der Form $10^{p-k}$.
+    Dieses codiert $2^{p-k}$, und wegen $k\ge 1$ gilt $2^{p-k}\ne 2^p$.
 
-In beiden Fällen codiert der linke Teil nach dem Pumpen nicht mehr die Anzahl der Einsen rechts von $\#$.
-Also gilt
-\[
-    xy^0z=xz\notin A.
-\]
-Das ist ein Widerspruch zum Pumping-Lemma.
+    \item In beiden Fällen codiert der linke Teil nach dem Pumpen nicht mehr die Anzahl der Einsen rechts von $\#$.
+    Also gilt
+    \[
+        xy^0z=xz\notin A.
+    \]
+    Das ist ein Widerspruch zum Pumping-Lemma.
+\end{enumerate}
 
-Also ist $A$ nicht regulär.
+Folglich ist $A$ nicht regulär.
 
 \section*{Aufgabe 3.8}
+
+\methodbox{
+Das Pumping-Lemma ist nur eine notwendige Bedingung für Regularität.
+Wenn eine Sprache das Pumping-Lemma erfüllt, folgt daraus noch nicht, dass sie regulär ist.
+
+\smallskip
+Für Nicht-Regularität kann man Abschlusseigenschaften benutzen:
+Sind $C$ und $R$ regulär, dann ist auch $C\cap R$ regulär.
+Findet man ein reguläres $R$ mit $C\cap R=B$, wobei $B$ bekannt nicht regulär ist, dann kann $C$ nicht regulär sein.
+}
 
 Wir schreiben
 \[
