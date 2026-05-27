@@ -25,6 +25,18 @@
 \medskip\par
 }
 
+\newcommand{\examplebox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Beispiele.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
 \title{ETI -- Aufgabenblatt 3 \\ Hausaufgaben}
 \author{}
 \date{}
@@ -153,6 +165,69 @@ Sei
 \[
 A=\{w\#1^k \mid w\in\{0,1\}^*,\; w \text{ codiert die Zahl } k\}.
 \]
+
+\examplebox{
+Links vom $\#$ steht eine Binärzahl. Rechts vom $\#$ müssen genau so viele $1$en stehen,
+wie diese Binärzahl als Zahl bedeutet.
+
+\smallskip
+Beispiele für Wörter in $A$:
+\[
+\begin{array}{c|c|c}
+\text{Wort} & \text{Binärzahl links} & \text{Anzahl der }1\text{en rechts}\\ \hline
+1\#1 & 1 & 1\\
+10\#11 & 2 & 2\\
+11\#111 & 3 & 3\\
+100\#1111 & 4 & 4
+\end{array}
+\]
+
+Beispiele für Wörter nicht in $A$:
+\[
+\begin{array}{c|c|c}
+\text{Wort} & \text{Binärzahl links} & \text{Anzahl der }1\text{en rechts}\\ \hline
+10\#1 & 2 & 1\\
+11\#11 & 3 & 2\\
+100\#111 & 4 & 3
+\end{array}
+\]
+
+Im Beweis wählen wir
+\[
+    s=10^p\#1^{2^p}.
+\]
+Das passt, weil $10^p$ die Binärzahl $2^p$ codiert.
+Für kleine Werte sieht das so aus:
+\[
+\begin{array}{c|c|c}
+p & 10^p & s=10^p\#1^{2^p}\\ \hline
+1 & 10 & 10\#11\\
+2 & 100 & 100\#1111\\
+3 & 1000 & 1000\#11111111
+\end{array}
+\]
+
+Für $p=3$ ist also
+\[
+    s=1000\#11111111.
+\]
+Wegen $|xy|\le p=3$ muss $xy$ komplett in den ersten drei Zeichen liegen:
+\[
+    \underbrace{100}_{\text{hier liegt }xy}\,0\#11111111.
+\]
+Also kann $y$ das Zeichen $\#$ nicht erreichen. Beispiele für mögliche Zerlegungen sind:
+\[
+\begin{array}{c|c|c|c}
+x & y & z & xy^0z=xz\\ \hline
+\varepsilon & 1 & 000\#11111111 & 000\#11111111\\
+1 & 0 & 00\#11111111 & 100\#11111111\\
+10 & 0 & 0\#11111111 & 100\#11111111\\
+\varepsilon & 10 & 00\#11111111 & 00\#11111111
+\end{array}
+\]
+In jedem Fall bleibt rechts vom $\#$ die Anzahl der $1$en gleich, aber links vom $\#$ wird die Binärzahl kleiner.
+}
+
 Wir zeigen mit dem Pumping-Lemma, dass $A$ nicht regulär ist.
 
 \medskip
@@ -173,15 +248,20 @@ Wir zeigen mit dem Pumping-Lemma, dass $A$ nicht regulär ist.
         \qquad\text{und}\qquad
         |xy|\le p.
     \]
-    Dann liegt $y$ vollständig im vorderen Binärteil $10^p$, also noch vor dem Zeichen $\#$.
+    Die Bedingung $|xy|\le p$ bedeutet: $x$ und $y$ liegen zusammen vollständig in den ersten $p$ Zeichen von $s$.
+    Diese ersten $p$ Zeichen gehören noch zum Binärteil $10^p$ und liegen sicher vor dem Zeichen $\#$.
+    Deshalb besteht $y$ nur aus Zeichen des linken Binärteils.
     Setze $k=|y|\ge 1$.
 
-    \item Pumpe mit $i=0$. Dann bleibt der rechte Teil $\#1^{2^p}$ unverändert, aber der Binärcode links von $\#$ wird kürzer.
+    \item Pumpe mit $i=0$. Das bedeutet: Wir löschen den Teil $y$.
+    Der rechte Teil $\#1^{2^p}$ bleibt dabei unverändert, denn $y$ liegt vor dem $\#$.
+    Nur der Binärcode links vom $\#$ wird kürzer.
 
+    Es gibt zwei Möglichkeiten:
     Falls $y$ die führende $1$ enthält, besteht der neue Binärteil nur noch aus Nullen.
-    Er codiert also nicht mehr $2^p$.
+    Er codiert also $0$ und nicht mehr $2^p$.
     Falls $y$ nur aus Nullen besteht, wird aus $10^p$ ein Wort der Form $10^{p-k}$.
-    Dieses codiert $2^{p-k}$, und wegen $k\ge 1$ gilt $2^{p-k}\ne 2^p$.
+    Dieses codiert $2^{p-k}$ und nicht mehr $2^p$.
 
     \item In beiden Fällen codiert der linke Teil nach dem Pumpen nicht mehr die Anzahl der Einsen rechts von $\#$.
     Also gilt
