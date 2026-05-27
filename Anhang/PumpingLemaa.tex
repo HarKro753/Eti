@@ -4,7 +4,13 @@
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
 \usepackage{tikz}
-\usetikzlibrary{positioning,decorations.pathreplacing}
+\usetikzlibrary{automata,positioning,decorations.pathreplacing,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
 
 \newcommand{\methodbox}[1]{%
 \medskip
@@ -46,6 +52,126 @@ Wir betrachten die Sprache
 L=\{w\in\{a,b\}^*\mid |w|_a>|w|_b\}.
 \]
 Dabei bezeichnet $|w|_a$ die Anzahl der $a$'s in $w$ und $|w|_b$ die Anzahl der $b$'s in $w$.
+
+\subsection*{Warum reichen mehr Zustände nicht?}
+
+Ein Automat für $L$ müsste sich merken, ob bisher mehr $a$'s als $b$'s gelesen wurden.
+Dafür ist die Differenz
+\[
+    |w|_a-|w|_b
+\]
+entscheidend. Schon bei den Wörtern
+\[
+    \varepsilon,\ a,\ aa,\ aaa,\ aaaa,\ldots
+\]
+entstehen unendlich viele mögliche Differenzen:
+\[
+    0,\ 1,\ 2,\ 3,\ 4,\ldots
+\]
+
+\begin{center}
+\begin{tikzpicture}[node distance=1.55cm]
+    \node[state] (d0) {$0$};
+    \node[state, accepting, right=of d0] (d1) {$1$};
+    \node[state, accepting, right=of d1] (d2) {$2$};
+    \node[state, accepting, right=of d2] (d3) {$3$};
+    \node[right=0.8cm of d3] (dots) {$\cdots$};
+
+    \path (d0) edge[bend left=18] node[above] {$a$} (d1)
+          (d1) edge[bend left=18] node[below] {$b$} (d0)
+          (d1) edge[bend left=18] node[above] {$a$} (d2)
+          (d2) edge[bend left=18] node[below] {$b$} (d1)
+          (d2) edge[bend left=18] node[above] {$a$} (d3)
+          (d3) edge[bend left=18] node[below] {$b$} (d2);
+\end{tikzpicture}
+\end{center}
+
+Die Zustände $1,2,3,\ldots$ wären akzeptierend, weil dort mehr $a$'s als $b$'s gelesen wurden.
+Der Zustand $0$ wäre nicht akzeptierend, weil dort gleich viele $a$'s und $b$'s gelesen wurden.
+
+\medskip
+Ein endlicher Automat kann diese unendlich vielen Differenzen nicht alle getrennt speichern.
+Also muss er irgendwann zwei verschiedene Differenzen im selben Zustand zusammenfassen:
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.4cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (r) {$r$};
+
+    \path (q0) edge[bend left=18] node[above] {$a^i$} (r)
+          (q0) edge[bend right=18] node[below] {$a^j$} (r);
+
+    \node[below=1.05cm of r, align=center] {$i<j$\\aber gleicher Zustand};
+\end{tikzpicture}
+\end{center}
+
+Ab diesem Zustand kann der Automat nicht mehr wissen, ob er eigentlich Differenz $i$ oder Differenz $j$ gespeichert hatte.
+Aber diese zwei Situationen brauchen verschiedene Antworten.
+Hänge nämlich $b^i$ an:
+\[
+    a^i b^i \notin L
+    \qquad\text{aber}\qquad
+    a^j b^i \in L,
+\]
+denn
+\[
+    i-i=0
+    \qquad\text{aber}\qquad
+    j-i>0.
+\]
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.4cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (r) {$r$};
+    \node[state, right=of r] (end) {?};
+
+    \path (q0) edge[bend left=18] node[above] {$a^i$} (r)
+          (q0) edge[bend right=18] node[below] {$a^j$} (r)
+          (r) edge node[above] {$b^i$} (end);
+
+    \node[below=1cm of end, align=center] {müsste gleichzeitig\\ablehnen und akzeptieren};
+\end{tikzpicture}
+\end{center}
+
+Das ist unmöglich. Mehr Zustände verschieben das Problem nur weiter nach hinten.
+Für alle möglichen Differenzen bräuchte man unendlich viele Zustände.
+
+\subsection*{Warum darf man pumpen?}
+
+Das Pumping-Lemma kommt aus einer Eigenschaft endlicher Automaten:
+Ein endlicher Automat hat nur endlich viele Zustände.
+Wenn er ein langes Wort liest, muss er irgendwann einen Zustand wiederholen.
+Dann ist der Teil des Wortes zwischen den beiden Besuchen eine Schleife.
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.1cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (qi) {$r$};
+    \node[state, right=of qi] (qf) {$t$};
+    \node[state, accepting, right=of qf] (qa) {};
+
+    \path (q0) edge node[above] {$x$} (qi)
+          (qi) edge[loop above] node {$y=a^k$} ()
+          (qi) edge node[above] {$z$} (qf)
+          (qf) edge node[above] {} (qa);
+\end{tikzpicture}
+\end{center}
+
+Wenn der Automat nach $x$ und nach $xy$ im selben Zustand $r$ ist, kann er nicht unterscheiden,
+ob die Schleife $y$ einmal, zweimal oder gar nicht gelesen wurde.
+Deshalb muss er alle Wörter
+\[
+    xz,\quad xyz,\quad xy^2z,\quad xy^3z,\ldots
+\]
+gleich behandeln.
+
+\medskip
+Genau hier entsteht der Widerspruch:
+Wenn ein Automat $xyz$ akzeptiert, dann müsste er wegen der Schleife auch $xz$ akzeptieren.
+Aber $xz$ liegt nicht mehr in der Sprache.
+Der Automat würde also ein falsches Wort akzeptieren.
+Darum kann es keinen endlichen Automaten für diese Sprache geben.
 
 \medskip
 \textbf{Beweis.}
