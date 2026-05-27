@@ -257,4 +257,89 @@ Darum kann es keinen endlichen Automaten für diese Sprache geben.
 
 Folglich ist $L$ nicht regulär.
 
+\newpage
+\subsection*{Warum der Beweis bei einem regulären Automaten nicht funktioniert}
+
+Jetzt betrachten wir zum Vergleich eine Sprache aus Aufgabenblatt 1:
+\[
+L_1=\{w\in\{a,b,c\}^*\mid \text{kein } c \text{ steht vor einem } a\}.
+\]
+Diese Sprache ist regulär. Ein passender Automat merkt sich nur, ob schon ein $c$ gelesen wurde:
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.5cm]
+    \node[state, initial, accepting] (q0) {$q_0$};
+    \node[state, accepting, right=of q0] (q1) {$q_1$};
+    \node[state, right=of q1] (q2) {$q_2$};
+
+    \path (q0) edge[loop above] node {$a,b$} ()
+          (q0) edge node[above] {$c$} (q1)
+          (q1) edge[loop above] node {$b,c$} ()
+          (q1) edge node[above] {$a$} (q2)
+          (q2) edge[loop above] node {$a,b,c$} ();
+\end{tikzpicture}
+\end{center}
+
+$q_0$ bedeutet: Es wurde noch kein $c$ gelesen.
+$q_1$ bedeutet: Es wurde schon ein $c$ gelesen, aber danach noch kein $a$.
+$q_2$ ist die Falle: Es kam ein $a$ nach einem $c$.
+
+\medskip
+Versuchen wir trotzdem, einen Pumping-Lemma-Beweis wie oben zu bauen.
+Sei $p$ die Pumping-Länge und wähle
+\[
+    s=a^pc^p.
+\]
+Dann gilt $s\in L_1$, denn alle $a$'s stehen vor allen $c$'s.
+
+\medskip
+Sei nun $s=xyz$ eine Zerlegung mit
+\[
+    |y|>0
+    \qquad\text{und}\qquad
+    |xy|\le p.
+\]
+Weil die ersten $p$ Zeichen von $s$ alle $a$ sind, liegt $y$ vollständig im ersten $a$-Block.
+Also gilt
+\[
+    y=a^k
+    \qquad\text{für ein } k\ge 1.
+\]
+
+\begin{center}
+\begin{tikzpicture}[x=0.9cm,y=0.9cm]
+    \block{0}{1.5}{$x$}{gray}
+    \block{1.5}{1.5}{$y=a^k$}{green}
+    \block{3}{2}{$a^{p-k-|x|}$}{blue}
+    \block{5}{4}{$c^p$}{red}
+    \draw[decorate,decoration={brace,mirror,amplitude=5pt}] (0,-0.1) -- (5,-0.1)
+        node[midway,below=7pt] {nur $a$'s};
+\end{tikzpicture}
+\end{center}
+
+Pumpen mit $i=0$ entfernt nur einige $a$'s:
+\[
+    xy^0z=xz=a^{p-k}c^p.
+\]
+Dieses Wort liegt aber immer noch in $L_1$, weil weiterhin kein $c$ vor einem $a$ steht.
+
+Auch Pumpen mit $i=2$ hilft nicht:
+\[
+    xy^2z=a^{p+k}c^p.
+\]
+Das Wort liegt ebenfalls noch in $L_1$.
+
+\medskip
+Der Versuch scheitert also genau an der Stelle, an der beim nicht-regulären Beispiel der Widerspruch entsteht.
+Das Pumpen verändert nur die Anzahl der $a$'s am Anfang, aber nicht die Form
+\[
+    \{a,b\}^*\{b,c\}^*.
+\]
+Deshalb bekommt man kein Wort außerhalb der Sprache.
+
+\medskip
+\textbf{Wichtig:} Das Pumping-Lemma ist ein Werkzeug, um Nicht-Regularität zu zeigen.
+Bei regulären Sprachen darf ein solcher Widerspruch nicht entstehen.
+Hier funktioniert der Pumping-Lemma-Beweis also nicht, weil $L_1$ tatsächlich regulär ist.
+
 \end{document}
