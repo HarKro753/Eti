@@ -1,0 +1,224 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+
+\title{ETI -- Aufgabenblatt 3 \\ Hausaufgaben}
+\author{}
+\date{}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 3 \\ Hausaufgaben\par}
+\vspace{2em}
+
+\section*{Aufgabe 3.6}
+
+Wir verwenden beim Eliminieren eines Zustands $x$ die Formel
+\[
+    \gamma'(p,q)
+    =
+    \gamma(p,q)
+    \cup
+    \gamma(p,x)\gamma(x,x)^*\gamma(x,q).
+\]
+Alle nicht eingezeichneten Kanten haben Beschriftung $\emptyset$.
+
+\medskip
+\textbf{Start-GNFA.}
+Die nichtleeren Kanten sind
+\[
+\begin{aligned}
+\gamma(q_0,q_1)&=\varepsilon, &
+\gamma(q_1,q_4)&=\varepsilon, &
+\gamma(q_1,q_2)&=0,\\
+\gamma(q_2,q_1)&=1, &
+\gamma(q_2,q_3)&=11, &
+\gamma(q_3,q_1)&=00.
+\end{aligned}
+\]
+
+\medskip
+\textbf{Eliminiere $q_1$.}
+Da $\gamma(q_1,q_1)=\emptyset$ gilt $\gamma(q_1,q_1)^*=\varepsilon$.
+Es entstehen die folgenden nichtleeren Kanten:
+\[
+\begin{aligned}
+\gamma(q_0,q_2)&=0, &
+\gamma(q_0,q_4)&=\varepsilon,\\
+\gamma(q_2,q_2)&=10, &
+\gamma(q_2,q_3)&=11, &
+\gamma(q_2,q_4)&=1,\\
+\gamma(q_3,q_2)&=000, &
+\gamma(q_3,q_4)&=00.
+\end{aligned}
+\]
+
+\medskip
+\textbf{Eliminiere $q_2$.}
+Jetzt ist $\gamma(q_2,q_2)=10$. Damit erhalten wir:
+\[
+\begin{aligned}
+\gamma(q_0,q_3)
+    &=0(10)^*11,\\
+\gamma(q_0,q_4)
+    &=\varepsilon \cup 0(10)^*1,\\
+\gamma(q_3,q_3)
+    &=000(10)^*11,\\
+\gamma(q_3,q_4)
+    &=00 \cup 000(10)^*1.
+\end{aligned}
+\]
+
+\medskip
+\textbf{Eliminiere $q_3$.}
+Der gesuchte reguläre Ausdruck ist die neue Kante von $q_0$ nach $q_4$:
+\[
+\begin{aligned}
+R
+&=
+\gamma(q_0,q_4)
+\cup
+\gamma(q_0,q_3)\gamma(q_3,q_3)^*\gamma(q_3,q_4)\\
+&=
+\left(\varepsilon \cup 0(10)^*1\right)
+\cup
+0(10)^*11
+\left(000(10)^*11\right)^*
+\left(00 \cup 000(10)^*1\right).
+\end{aligned}
+\]
+Also ist
+\[
+\boxed{
+R=
+\varepsilon \cup 0(10)^*1
+\cup
+0(10)^*11
+\left(000(10)^*11\right)^*
+\left(00 \cup 000(10)^*1\right)
+}.
+\]
+
+\section*{Aufgabe 3.7}
+
+Sei
+\[
+A=\{w\#1^k \mid w\in\{0,1\}^*,\; w \text{ codiert die Zahl } k\}.
+\]
+Wir zeigen mit dem Pumping-Lemma, dass $A$ nicht regulär ist.
+
+\medskip
+\textbf{Beweis.}
+Annahme: $A$ ist regulär. Sei $p$ die Pumping-Länge.
+
+Wähle
+\[
+    s = 10^p \# 1^{2^p}.
+\]
+Das Wort $10^p$ codiert die Zahl $2^p$, also gilt $s\in A$.
+Außerdem ist $|s|\ge p$.
+
+Sei nun $s=xyz$ eine Zerlegung mit
+\[
+    |y|>0
+    \qquad\text{und}\qquad
+    |xy|\le p.
+\]
+Dann liegt $y$ vollständig im vorderen Binärteil $10^p$, also noch vor dem Zeichen $\#$.
+Setze $k=|y|\ge 1$.
+
+Wir pumpen mit $i=0$, betrachten also $xz$.
+Dabei bleibt der rechte Teil $\#1^{2^p}$ unverändert, aber der Binärcode links von $\#$ verändert sich.
+
+Es gibt zwei Fälle:
+\begin{itemize}
+    \item Falls $y$ die führende $1$ enthält, besteht der neue Binärteil nur noch aus Nullen. Er codiert also $0$, aber rechts stehen weiterhin $2^p$ Einsen.
+    \item Falls $y$ nur aus Nullen besteht, wird aus $10^p$ ein Wort der Form $10^{p-k}$. Dieses codiert $2^{p-k}$, und wegen $k\ge 1$ gilt $2^{p-k}\ne 2^p$.
+\end{itemize}
+
+In beiden Fällen codiert der linke Teil nach dem Pumpen nicht mehr die Anzahl der Einsen rechts von $\#$.
+Also gilt
+\[
+    xy^0z=xz\notin A.
+\]
+Das ist ein Widerspruch zum Pumping-Lemma.
+
+Also ist $A$ nicht regulär.
+
+\section*{Aufgabe 3.8}
+
+Wir schreiben
+\[
+B=\{b^m a^{r^2}\mid m\ge 1,\; r\ge 0\}.
+\]
+Dann ist
+\[
+C = B \cup L(a^*) = B\cup \{a^n\mid n\ge 0\}.
+\]
+
+\subsection*{1. $C$ erfüllt die Bedingungen des Pumping-Lemmas}
+
+Wir zeigen direkt die Pumping-Eigenschaft. Wähle $p=1$.
+Sei $w\in C$ mit $|w|\ge 1$.
+
+\medskip
+\textbf{Fall 1: $w\in L(a^*)$.}
+Dann ist $w=a^n$ mit $n\ge 1$.
+Wähle
+\[
+    x=\varepsilon,\qquad y=a,\qquad z=a^{n-1}.
+\]
+Dann gilt $|y|=1>0$ und $|xy|=1\le p$.
+Für alle $i\ge 0$ gilt
+\[
+    xy^iz = a^{n-1+i}\in L(a^*)\subseteq C.
+\]
+
+\medskip
+\textbf{Fall 2: $w\in B$.}
+Dann ist $w=b^m a^{r^2}$ mit $m\ge 1$.
+Wähle
+\[
+    x=\varepsilon,\qquad y=b,\qquad z=b^{m-1}a^{r^2}.
+\]
+Dann gilt wieder $|y|=1>0$ und $|xy|=1\le p$.
+Für $i\ge 0$ gilt
+\[
+    xy^iz = b^{m-1+i}a^{r^2}.
+\]
+Falls $m-1+i\ge 1$, liegt dieses Wort in $B$.
+Der einzige andere Fall ist $m=1$ und $i=0$; dann ist
+\[
+    xy^0z=a^{r^2}\in L(a^*)\subseteq C.
+\]
+Also gilt in jedem Fall $xy^iz\in C$ für alle $i\ge 0$.
+
+Damit erfüllt $C$ alle Bedingungen des Pumping-Lemmas.
+
+\subsection*{2. $C$ ist nicht regulär}
+
+Aus der Aufgabenstellung wissen wir, dass $B$ nicht regulär ist.
+Betrachte die reguläre Sprache
+\[
+    R=L(b^+a^*)=\{b^m a^n\mid m\ge 1,\; n\ge 0\}.
+\]
+Dann gilt
+\[
+    C\cap R
+    =
+    (B\cup L(a^*))\cap R
+    =
+    B.
+\]
+Denn $B\subseteq R$, aber $L(a^*)\cap R=\emptyset$, da Wörter aus $R$ mindestens ein $b$ enthalten.
+
+Angenommen, $C$ wäre regulär. Dann wäre auch $C\cap R$ regulär, weil reguläre Sprachen unter Schnitt abgeschlossen sind.
+Also wäre $B$ regulär. Das widerspricht der gegebenen Aussage, dass $B$ nicht regulär ist.
+
+Folglich ist $C$ nicht regulär.
+
+\end{document}
