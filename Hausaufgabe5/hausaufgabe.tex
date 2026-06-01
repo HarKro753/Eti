@@ -1,0 +1,341 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
+
+\newcommand{\methodbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Methodik / Definition.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\examplebox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Beispiele.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\taskbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Aufgabenstellung.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 5 \\ Hausaufgaben\par}
+\vspace{2em}
+
+\section*{Aufgabe 5.6}
+
+\taskbox{
+Bringen Sie die Grammatik
+\[
+S\to SaSb\mid A,\qquad
+A\to \varepsilon\mid B\mid a,\qquad
+B\to bB\mid A\mid C,\qquad
+C\to c
+\]
+in Chomsky-Normalform. Das Startsymbol ist $S$.
+}
+
+\methodbox{
+Eine CFG ist in Chomsky-Normalform, wenn jede Regel eine der Formen
+\[
+    A\to BC,\qquad A\to a,\qquad S_0\to\varepsilon
+\]
+hat. Die letzte Regel ist nur fuer die Startvariable erlaubt, wenn $\varepsilon$ in der Sprache liegt.
+Damit die Startvariable nicht rechts vorkommt, fuehrt man zuerst eine neue Startvariable ein.
+Danach entfernt man $\varepsilon$-Regeln, Kettenregeln und ersetzt Terminale in laengeren rechten
+Seiten durch eigene Variablen.
+}
+
+\textbf{Schritt 1: Neue Startvariable.}
+
+Da $S$ rechts in $S\to SaSb$ vorkommt und $\varepsilon$ erzeugt werden kann, fuehren wir eine neue
+Startvariable $S_0$ ein:
+\[
+    S_0\to S.
+\]
+
+\textbf{Schritt 2: $\varepsilon$-Regeln entfernen.}
+
+Nullable sind $A$, $B$ und $S$, denn
+\[
+    A\Rightarrow\varepsilon,\qquad B\Rightarrow A\Rightarrow\varepsilon,\qquad
+    S\Rightarrow A\Rightarrow\varepsilon.
+\]
+Aus $S\to SaSb$ entstehen daher alle Varianten, in denen die beiden Vorkommen von $S$
+optional gestrichen werden. Nur fuer die neue Startvariable behalten wir $\varepsilon$:
+\[
+\begin{aligned}
+S_0 &\to S \mid \varepsilon,\\
+S &\to SaSb \mid aSb \mid Sab \mid ab \mid A,\\
+A &\to B \mid a,\\
+B &\to bB \mid b \mid A \mid C,\\
+C &\to c.
+\end{aligned}
+\]
+
+\textbf{Schritt 3: Kettenregeln entfernen.}
+
+Die Kettenregeln sind $S_0\to S$, $S\to A$, $A\to B$, $B\to A$ und $B\to C$.
+Wir ersetzen sie, indem wir die nichttrivialen Regeln der erreichbaren Variablen direkt uebernehmen:
+\[
+\begin{aligned}
+S_0 &\to \varepsilon \mid SaSb \mid aSb \mid Sab \mid ab
+        \mid a \mid bB \mid b \mid c,\\
+S &\to SaSb \mid aSb \mid Sab \mid ab
+        \mid a \mid bB \mid b \mid c,\\
+A &\to a \mid bB \mid b \mid c,\\
+B &\to bB \mid a \mid b \mid c,\\
+C &\to c.
+\end{aligned}
+\]
+Die Variablen $A$ und $C$ sind nun vom Startsymbol aus nicht mehr erreichbar und koennen entfernt
+werden.
+
+\textbf{Schritt 4: Terminale in langen Regeln ersetzen und binaer machen.}
+
+Wir fuehren
+\[
+    T_a\to a,\qquad T_b\to b
+\]
+ein. Fuer die langen rechten Seiten nutzen wir zusaetzlich
+\[
+    E\to T_aT_b,\qquad G\to ST_b,\qquad F\to T_aG.
+\]
+Damit erhalten wir die CNF-Grammatik
+\[
+G_{\mathrm{CNF}}=(V',\{a,b,c\},R',S_0)
+\]
+mit
+\[
+V'=\{S_0,S,B,T_a,T_b,E,F,G\}
+\]
+und Regeln
+\[
+\begin{aligned}
+S_0 &\to \varepsilon \mid SF \mid T_aG \mid SE \mid T_aT_b
+        \mid a \mid T_bB \mid b \mid c,\\
+S &\to SF \mid T_aG \mid SE \mid T_aT_b
+        \mid a \mid T_bB \mid b \mid c,\\
+B &\to T_bB \mid a \mid b \mid c,\\
+E &\to T_aT_b,\\
+F &\to T_aG,\\
+G &\to ST_b,\\
+T_a &\to a,\\
+T_b &\to b.
+\end{aligned}
+\]
+Alle rechten Seiten haben nun die Form $XY$, ein einzelnes Terminal oder, nur bei $S_0$, das Wort
+$\varepsilon$. Ausserdem kommt $S_0$ auf keiner rechten Seite vor.
+
+\section*{Aufgabe 5.7}
+
+\taskbox{
+Zeigen Sie, dass die kontextfreien Sprachen unter Vereinigung, Konkatenation und Kleene-Stern
+abgeschlossen sind. Geben Sie jeweils eine Konstruktionsvorschrift fuer die entsprechende Grammatik an.
+}
+
+\methodbox{
+Eine Sprache ist kontextfrei, wenn es eine CFG gibt, die sie erzeugt. Fuer Abschlussbeweise reicht es
+daher, aus gegebenen CFGs neue CFGs zu konstruieren, die genau die gewuenschte zusammengesetzte
+Sprache erzeugen.
+}
+
+Seien $L_1,L_2$ kontextfrei. Dann gibt es CFGs
+\[
+G_1=(V_1,\Sigma,R_1,S_1),\qquad
+G_2=(V_2,\Sigma,R_2,S_2)
+\]
+mit $L(G_1)=L_1$ und $L(G_2)=L_2$. Wir nehmen ohne Einschraenkung an, dass
+$V_1\cap V_2=\emptyset$ ist, denn Variablen kann man umbenennen.
+
+\textbf{Vereinigung.}
+Definiere
+\[
+G_\cup=(V_1\cup V_2\cup\{S\},\Sigma,R_1\cup R_2\cup\{S\to S_1\mid S_2\},S).
+\]
+Dann waehlt die erste Regel genau aus, ob ein Wort mit $G_1$ oder mit $G_2$ erzeugt wird. Also gilt
+\[
+L(G_\cup)=L_1\cup L_2.
+\]
+
+\textbf{Konkatenation.}
+Definiere
+\[
+G_\circ=(V_1\cup V_2\cup\{S\},\Sigma,R_1\cup R_2\cup\{S\to S_1S_2\},S).
+\]
+Jede Ableitung erzeugt zuerst ein Wort aus $L_1$ und danach ein Wort aus $L_2$. Umgekehrt kann jedes
+$uv$ mit $u\in L_1$ und $v\in L_2$ so abgeleitet werden. Also gilt
+\[
+L(G_\circ)=L_1L_2.
+\]
+
+\textbf{Kleene-Stern.}
+Fuer $L_1^*$ definieren wir
+\[
+G_*=(V_1\cup\{S\},\Sigma,R_1\cup\{S\to S_1S\mid \varepsilon\},S).
+\]
+Die Regel $S\to\varepsilon$ erzeugt null Faktoren. Jede Anwendung von $S\to S_1S$ fuegt vorne ein
+weiteres Wort aus $L_1$ hinzu. Daher erzeugt die Grammatik genau endliche Konkatenationen von
+Woertern aus $L_1$, also
+\[
+L(G_*)=L_1^*.
+\]
+
+\section*{Aufgabe 5.8}
+
+\taskbox{
+Bestimmen Sie die Sprache, die von dem gegebenen PDA akzeptiert wird, und geben Sie eine moeglichst
+intuitive Beschreibung an.
+}
+
+\methodbox{
+Bei einem PDA bedeutet die Kantenbeschriftung $a,b\to c$: Lies $a$, entferne $b$ vom Stack und lege
+$c$ auf den Stack. Falls ein Eintrag $\varepsilon$ ist, wird an dieser Stelle nichts gelesen, entfernt oder
+hinzugefuegt. Ein nichtdeterministischer PDA akzeptiert, wenn mindestens ein Berechnungspfad in einem
+akzeptierenden Zustand endet, nachdem die Eingabe gelesen wurde.
+}
+
+Der PDA legt zuerst einen Bodenmarker $\$$ auf den Stack. Danach gilt im Zustand $q_1$:
+\[
+\texttt{(},\varepsilon\to 1
+\qquad\text{und}\qquad
+\texttt{)},1\to\varepsilon.
+\]
+Also wird fuer jede oeffnende Klammer ein $1$ auf den Stack gelegt, und fuer jede schliessende Klammer
+wird ein $1$ entfernt. Akzeptiert wird genau dann, wenn am Ende wieder nur der Bodenmarker uebrig ist.
+
+Damit ist die akzeptierte Sprache
+\[
+\boxed{L(P)=D}
+\]
+mit
+\[
+\begin{aligned}
+D=\{w\in\{\texttt{(},\texttt{)}\}^* \mid{}&
+\text{jeder Praefix von }w\text{ hat mindestens so viele \texttt{(} wie \texttt{)},}\\
+&\text{und insgesamt sind es gleich viele}\}.
+\end{aligned}
+\]
+Intuitiv ist das die Sprache der korrekt geklammerten Woerter mit genau einer Klammerart.
+
+\examplebox{
+Akzeptiert werden zum Beispiel
+\[
+\varepsilon,\qquad \texttt{()},\qquad \texttt{(())},\qquad \texttt{()()}.
+\]
+Nicht akzeptiert werden zum Beispiel
+\[
+\texttt{)(},\qquad \texttt{(()},\qquad \texttt{())}.
+\]
+}
+
+\section*{Aufgabe 5.9}
+
+\taskbox{
+Entwerfen Sie einen PDA fuer
+\[
+L=\{a^ib^jc^k\mid 2j=3k \ \lor\ i+k=j\}
+\]
+und begruenden Sie kurz, weshalb der PDA die Sprache erkennt.
+}
+
+\methodbox{
+Da PDAs nichtdeterministisch sind, kann man fuer eine Vereinigung zweier Bedingungen zuerst
+nichtdeterministisch einen Zweig waehlen. Der eine Zweig prueft $2j=3k$, der andere Zweig prueft
+$i+k=j$.
+}
+
+Wir beschreiben einen PDA $P$ ueber dem Eingabealphabet $\{a,b,c\}$. Zuerst legt $P$ den Bodenmarker
+$\$$ auf den Stack und waehlt dann nichtdeterministisch einen der beiden folgenden Zweige.
+
+\subsection*{Zweig 1: Pruefe $2j=3k$}
+
+Die $a$'s werden ignoriert. Fuer jedes gelesene $b$ werden zwei Symbole $X$ auf den Stack gelegt. Fuer
+jedes gelesene $c$ werden drei Symbole $X$ entfernt. Am Ende wird akzeptiert, wenn genau der
+Bodenmarker erreicht ist.
+
+Eine moegliche Uebergangsbeschreibung ist:
+\[
+\begin{array}{rcl}
+r_0 &:& a,\varepsilon\to\varepsilon \text{ bleibt in } r_0,\\
+r_0 &:& \varepsilon,\varepsilon\to\varepsilon \text{ nach } r_b,\\
+r_b &:& b,\varepsilon\to X \text{ nach } r_{b,2},\\
+r_{b,2} &:& \varepsilon,\varepsilon\to X \text{ nach } r_b,\\
+r_b &:& c,X\to\varepsilon \text{ nach } r_{c,1},\\
+r_{c,1} &:& \varepsilon,X\to\varepsilon \text{ nach } r_{c,2},\\
+r_{c,2} &:& \varepsilon,X\to\varepsilon \text{ nach } r_c,\\
+r_c &:& c,X\to\varepsilon \text{ nach } r_{c,1},\\
+r_b,r_c &:& \varepsilon,\$\to\varepsilon \text{ nach } q_{\mathrm{acc}}.
+\end{array}
+\]
+Dieser Zweig akzeptiert genau dann, wenn die Anzahl der gelegten $X$ gleich der Anzahl der entfernten
+$X$ ist, also genau dann, wenn $2j=3k$ gilt.
+
+\subsection*{Zweig 2: Pruefe $i+k=j$}
+
+Fuer jedes $a$ wird ein Symbol $A$ auf den Stack gelegt. In der $b$-Phase werden zuerst diese
+$A$-Symbole entfernt. Sobald keine $A$-Symbole mehr uebrig sind, wird fuer jedes weitere $b$ ein
+Symbol $B$ auf den Stack gelegt. In der $c$-Phase wird fuer jedes $c$ ein $B$ entfernt. Am Ende wird
+akzeptiert, wenn genau der Bodenmarker erreicht ist.
+
+Eine moegliche Uebergangsbeschreibung ist:
+\[
+\begin{array}{rcl}
+s_a &:& a,\varepsilon\to A \text{ bleibt in } s_a,\\
+s_a &:& b,A\to\varepsilon \text{ nach } s_{\mathrm{pop}},\\
+s_{\mathrm{pop}} &:& b,A\to\varepsilon \text{ bleibt in } s_{\mathrm{pop}},\\
+s_a,s_{\mathrm{pop}} &:& \varepsilon,\$\to \$ \text{ nach } s_{\mathrm{push}},\\
+s_{\mathrm{push}} &:& b,\varepsilon\to B \text{ bleibt in } s_{\mathrm{push}},\\
+s_{\mathrm{push}} &:& c,B\to\varepsilon \text{ nach } s_c,\\
+s_c &:& c,B\to\varepsilon \text{ bleibt in } s_c,\\
+s_{\mathrm{push}},s_c &:& \varepsilon,\$\to\varepsilon \text{ nach } q_{\mathrm{acc}}.
+\end{array}
+\]
+Dieser Zweig akzeptiert genau dann, wenn die Zahl der $b$'s ausreicht, um zuerst alle $i$ Symbole fuer
+die $a$'s zu entfernen, und danach genau $k$ weitere $b$'s fuer die $c$'s gespeichert wurden. Also gilt
+genau
+\[
+    j=i+k.
+\]
+
+Da der PDA zu Beginn nichtdeterministisch einen der beiden Zweige waehlt, akzeptiert er genau dann,
+wenn mindestens eine der Bedingungen erfuellt ist. Somit gilt
+\[
+\boxed{L(P)=\{a^ib^jc^k\mid 2j=3k \ \lor\ i+k=j\}.}
+\]
+
+\end{document}
