@@ -37,6 +37,18 @@
 \medskip\par
 }
 
+\newcommand{\taskbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Aufgabenstellung.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
 \title{ETI -- Aufgabenblatt 3 \\ Hausaufgaben}
 \author{}
 \date{}
@@ -49,6 +61,11 @@
 \vspace{2em}
 
 \section*{Aufgabe 3.6}
+
+\taskbox{
+Finden Sie den regulären Ausdruck zu folgendem GNFA in dem Sie nacheinander
+$q_1$, $q_2$ und $q_3$ mit dem Verfahren auch der Vorlesung eliminieren.
+}
 
 \methodbox{
 Ein GNFA hat zwischen je zwei Zuständen genau eine Kante, deren Beschriftung ein regulärer Ausdruck ist.
@@ -150,6 +167,12 @@ R=
 
 \section*{Aufgabe 3.7}
 
+\taskbox{
+Es sei $A$ die Sprache aller Wörter $w\#1^k$ mit $w\in\{0,1\}^*$, wobei $k$ die natürliche Zahl
+ist, die durch $w$ codiert wird (das leere Wort codiert die $0$ und führende Nullen sind erlaubt).
+Zeigen Sie mit dem Pumpinglemma, dass $A$ nicht regulär ist.
+}
+
 \methodbox{
 Pumping-Lemma zum Nachweis von Nicht-Regularität:
 \begin{enumerate}
@@ -165,6 +188,11 @@ Sei
 \[
 A=\{w\#1^k \mid w\in\{0,1\}^*,\; w \text{ codiert die Zahl } k\}.
 \]
+Formal schreiben wir dafür
+\[
+    A=\{w\#1^n \mid w\in\{0,1\}^*,\; n=\operatorname{val}(w)\},
+\]
+wobei $\operatorname{val}(w)$ der Zahlenwert der Binärdarstellung $w$ ist.
 
 \examplebox{
 Links vom $\#$ steht eine Binärzahl. Rechts vom $\#$ müssen genau so viele $1$en stehen,
@@ -257,14 +285,49 @@ Wir zeigen mit dem Pumping-Lemma, dass $A$ nicht regulär ist.
     Der rechte Teil $\#1^{2^p}$ bleibt dabei unverändert, denn $y$ liegt vor dem $\#$.
     Nur der Binärcode links vom $\#$ wird kürzer.
 
-    Es gibt zwei Möglichkeiten:
-    Falls $y$ die führende $1$ enthält, besteht der neue Binärteil nur noch aus Nullen.
-    Er codiert also $0$ und nicht mehr $2^p$.
-    Falls $y$ nur aus Nullen besteht, wird aus $10^p$ ein Wort der Form $10^{p-k}$.
-    Dieses codiert $2^{p-k}$ und nicht mehr $2^p$.
+    Es gibt zwei Möglichkeiten.
 
-    \item In beiden Fällen codiert der linke Teil nach dem Pumpen nicht mehr die Anzahl der Einsen rechts von $\#$.
-    Also gilt
+    \medskip
+    \textbf{Fall 1: $y$ enthält die führende $1$.}
+    Dann muss $x=\varepsilon$ gelten und es gibt ein $j$ mit $0\le j\le p-1$, so dass
+    \[
+        y=10^j
+        \qquad\text{und}\qquad
+        z=0^{p-j}\#1^{2^p}.
+    \]
+    Nach dem Pumpen mit $i=0$ entsteht also
+    \[
+        xy^0z=xz=0^{p-j}\#1^{2^p}.
+    \]
+    Der linke Teil $0^{p-j}$ codiert wegen der erlaubten führenden Nullen die Zahl $0$.
+    Rechts vom $\#$ stehen aber $2^p$ Einsen. Da $2^p\ne 0$ gilt, hat das Wort nicht die Form
+    \[
+        w\#1^n
+        \quad\text{mit $w$ codiert $n$}.
+    \]
+    Also ist $xz\notin A$.
+
+    \medskip
+    \textbf{Fall 2: $y$ besteht nur aus Nullen.}
+    Dann gibt es ein $k=|y|$ mit $1\le k\le p-1$, so dass beim Löschen von $y$ genau $k$ Nullen aus $10^p$ entfernt werden.
+    Das gepumpte Wort hat daher die Form
+    \[
+        xy^0z=xz=10^{p-k}\#1^{2^p}.
+    \]
+    Der linke Teil $10^{p-k}$ codiert die Zahl $2^{p-k}$.
+    Rechts vom $\#$ stehen weiterhin $2^p$ Einsen.
+    Wegen $k\ge 1$ gilt $p-k<p$ und damit
+    \[
+        2^{p-k}\ne 2^p.
+    \]
+    Auch dieses Wort hat also nicht die Form
+    \[
+        w\#1^n
+        \quad\text{mit $w$ codiert $n$}.
+    \]
+    Also ist wieder $xz\notin A$.
+
+    \item In beiden Fällen gibt es mit $i=0$ ein gepumptes Wort außerhalb von $A$:
     \[
         xy^0z=xz\notin A.
     \]
@@ -274,6 +337,23 @@ Wir zeigen mit dem Pumping-Lemma, dass $A$ nicht regulär ist.
 Folglich ist $A$ nicht regulär.
 
 \section*{Aufgabe 3.8}
+
+\taskbox{
+Es sei
+\[
+    B=\{ss' \mid s\in L(b^+),\; s'\in\{a^i \mid i \text{ ist Quadratzahl}\}\}
+\]
+(dabei ist $b^+$ eine Kurzschreibweise für $bb^*$ oder $b^*b$). Dann ist $B$ nicht regulär
+(und das kann ganz ähnlich wie ein Beispiel aus der Vorlesung gezeigt werden). Wir betrachten
+die folgende Sprache:
+\[
+    C=B\cup L(a^*)
+\]
+\begin{enumerate}
+    \item Zeigen Sie, dass $C$ alle Bedingungen des Pumpinglemmas erfüllt.
+    \item Zeigen Sie, dass $C$ nicht regulär ist. Dabei können Sie Abschlusseigenschaften der regulären Sprachen ausnutzen.
+\end{enumerate}
+}
 
 \methodbox{
 Das Pumping-Lemma ist nur eine notwendige Bedingung für Regularität.
