@@ -1,0 +1,300 @@
+\documentclass[a4paper,12pt,fleqn]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
+
+\newcommand{\methodbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Methodik / Definition.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\examplebox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Beispiele.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\taskbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Aufgabenstellung.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\mathindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 5 \\ Praesenzaufgaben\par}
+\vspace{2em}
+
+\section*{Aufgabe 5.1}
+
+\taskbox{
+Gegeben ist die Grammatik $G_1=(V,\Sigma,R,S)$ mit
+$V=\{S,A,B,X\}$, $\Sigma=\{0,1\}$ und
+\[
+S\to ABA\mid ABB\mid XA\mid B1,\qquad
+B\to 0\mid 1\mid A,\qquad
+A\to 0\mid 1\mid \varepsilon.
+\]
+Entfernen Sie alle $\varepsilon$-Regeln von nicht-Start-Nonterminalen.
+}
+
+\methodbox{
+Zuerst bestimmen wir die nullable Nonterminale. Fuer jede Produktion fuegen wir dann alle
+Varianten hinzu, in denen nullable Vorkommen gestrichen werden. Die Regel
+$S\to\varepsilon$ darf bleiben, weil $S$ das Startsymbol ist und die urspruengliche Grammatik
+das leere Wort erzeugen kann.
+}
+
+Nullable sind
+\[
+    A,\qquad B \quad\text{und}\quad S.
+\]
+Dabei gilt $A\Rightarrow\varepsilon$, $B\Rightarrow A\Rightarrow\varepsilon$ und
+$S\Rightarrow ABA\Rightarrow\varepsilon$.
+
+\medskip
+Die Produktionen nach dem Entfernen der $\varepsilon$-Regel $A\to\varepsilon$ lauten:
+\[
+\begin{aligned}
+S &\to ABA \mid BA \mid AB \mid AA \mid B \mid A
+      \mid ABB \mid BB \mid XA \mid X \mid B1 \mid 1 \mid \varepsilon,\\
+B &\to 0 \mid 1 \mid A,\\
+A &\to 0 \mid 1.
+\end{aligned}
+\]
+Damit gibt es keine $\varepsilon$-Regel eines Nicht-Startsymbols mehr.
+
+\section*{Aufgabe 5.2}
+
+\taskbox{
+Gegeben ist die Grammatik $G_2=(V,\Sigma,R,S)$ mit
+$V=\{S,T,U,V,W\}$, $\Sigma=\{k,j,h,b\}$ und
+\[
+\begin{aligned}
+S&\to T\mid Vj,\\
+T&\to U\mid b\mid Wh,\\
+U&\to W\mid k,\\
+V&\to W\mid j\mid Vb,\\
+W&\to h.
+\end{aligned}
+\]
+Entfernen Sie alle Kettenregeln.
+}
+
+\methodbox{
+Eine Kettenregel hat die Form $A\to B$ mit $A,B\in V$. Fuer jedes Nonterminal $A$ betrachten
+wir alle Nonterminale, die von $A$ nur mit Kettenregeln erreichbar sind, und uebernehmen deren
+nicht-Kettenregeln direkt nach $A$.
+}
+
+Die Kettenabschluesse sind
+\[
+\begin{array}{c|l}
+A & \text{ueber Kettenregeln erreichbar}\\ \hline
+S & S,T,U,W\\
+T & T,U,W\\
+U & U,W\\
+V & V,W\\
+W & W
+\end{array}
+\]
+
+Nach dem Entfernen aller Kettenregeln erhalten wir:
+\[
+\begin{aligned}
+S &\to Vj \mid b \mid Wh \mid k \mid h,\\
+T &\to b \mid Wh \mid k \mid h,\\
+U &\to k \mid h,\\
+V &\to j \mid Vb \mid h,\\
+W &\to h.
+\end{aligned}
+\]
+
+\section*{Aufgabe 5.3}
+
+\taskbox{
+Gegeben ist die Grammatik $G_3=(V,\Sigma,R,S)$ mit
+$V=\{S,X,Y,Z\}$, $\Sigma=\{a,b,c,d\}$ und
+\[
+S\to XYZ\mid aX,\qquad
+X\to XYZ\mid a,\qquad
+Y\to YYZ\mid Zb,\qquad
+Z\to a\mid ab.
+\]
+Bringen Sie die Grammatik in Chomsky-Normalform.
+}
+
+\methodbox{
+In Chomsky-Normalform haben alle Regeln die Form $A\to BC$ oder $A\to a$.
+Terminale in rechten Seiten der Laenge mindestens $2$ ersetzen wir daher durch eigene
+Variablen. Rechte Seiten der Laenge $3$ werden binaer zerlegt.
+}
+
+Es gibt keine $\varepsilon$-Regeln und keine Kettenregeln. Wir fuehren
+\[
+    T_a\to a,\qquad T_b\to b,\qquad C_{YZ}\to YZ
+\]
+ein. Die rechten Seiten $XYZ$ und $YYZ$ koennen dann als $XC_{YZ}$ bzw. $YC_{YZ}$
+geschrieben werden.
+
+\medskip
+Eine Chomsky-Normalform ist also
+\[
+G_{\mathrm{CNF}}=(V',\{a,b,c,d\},R',S)
+\]
+mit
+\[
+V'=\{S,X,Y,Z,T_a,T_b,C_{YZ}\}
+\]
+und
+\[
+\begin{aligned}
+S &\to XC_{YZ}\mid T_aX,\\
+X &\to XC_{YZ}\mid a,\\
+Y &\to YC_{YZ}\mid ZT_b,\\
+Z &\to a\mid T_aT_b,\\
+C_{YZ} &\to YZ,\\
+T_a &\to a,\\
+T_b &\to b.
+\end{aligned}
+\]
+Alle Produktionen haben nun die Form $A\to BC$ oder $A\to a$.
+
+\section*{Aufgabe 5.4}
+
+\taskbox{
+Betrachten Sie
+\[
+M=\{w\in\{0,1\}^*\mid |w|_0=|w|_1\}.
+\]
+Konstruieren Sie einen PDA $P$ mit $L(P)=M$.
+}
+
+\methodbox{
+Der Stack speichert nur die noch nicht ausgeglichenen Zeichen. Liest der PDA ein Zeichen,
+das zum aktuellen Stacktop passt, wird es gepusht. Liest er das jeweils andere Zeichen,
+wird das Stacktop geloescht. Am Ende ist genau dann nur noch das Bodensymbol uebrig,
+wenn gleich viele $0$en und $1$en gelesen wurden.
+}
+
+Wir verwenden das Stackalphabet
+\[
+    \Gamma=\{0,1,\$\}
+\]
+mit Bodensymbol $\$$ und akzeptieren per Endzustand. Der PDA ist
+\[
+P=(\{q_0,q_1,q_2\},\{0,1\},\{0,1,\$\},\delta,q_0,\{q_2\}).
+\]
+
+\begin{center}
+\begin{tikzpicture}[node distance=4.1cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (q1) {$q_1$};
+    \node[state, accepting, right=of q1] (q2) {$q_2$};
+
+    \path (q0) edge node[above] {$\varepsilon,\varepsilon\to\$$} (q1)
+          (q1) edge[loop above] node {$\begin{array}{c}
+              0,1\to\varepsilon\quad 1,0\to\varepsilon
+          \end{array}$} ()
+          (q1) edge[loop below] node {$\begin{array}{c}
+              0,\$\to 0\$\quad 1,\$\to 1\$\\
+              0,0\to 00\quad 1,1\to 11
+          \end{array}$} ()
+          (q1) edge node[above] {$\varepsilon,\$\to\varepsilon$} (q2);
+\end{tikzpicture}
+\end{center}
+
+Nach jedem gelesenen Praefix enthaelt der Stack ueber $\$$ genau die Differenz der bisher
+gelesenen Zeichen: lauter $0$en, falls bisher mehr $0$en gelesen wurden, oder lauter $1$en,
+falls bisher mehr $1$en gelesen wurden. Deshalb ist nach dem ganzen Wort genau dann nur noch
+$\$$ auf dem Stack, wenn $|w|_0=|w|_1$ gilt. Genau dann kann der PDA nach $q_2$ wechseln.
+
+\section*{Aufgabe 5.5}
+
+\taskbox{
+Vervollstaendigen Sie eine kontextsensitive Grammatik fuer
+\[
+    A=\{a^n b^n c^n\mid n\in\mathbb{Z}_{\ge 0}\}
+\]
+ausgehend von
+\[
+S\to A\mid \varepsilon,\qquad
+A\to abc\mid aABc.
+\]
+}
+
+\methodbox{
+Die Regel $A\to aABc$ erzeugt pro Rekursionsschritt ein weiteres $a$, ein weiteres $B$
+und ein weiteres $c$. Danach muessen die $B$-Symbole nach links ueber die $c$-Symbole
+wandern und dort zu $b$ werden.
+}
+
+Eine passende Vervollstaendigung ist:
+\[
+\begin{aligned}
+S &\to A\mid \varepsilon,\\
+A &\to abc\mid aABc,\\
+cB &\to Bc,\\
+bB &\to bb.
+\end{aligned}
+\]
+
+Alle Regeln sind kontextsensitiv: Sie verkuerzen nicht. Die einzige $\varepsilon$-Regel ist
+$S\to\varepsilon$, und $S$ kommt auf keiner rechten Seite vor.
+
+\medskip
+Nach $n-1$ Anwendungen von $A\to aABc$ und anschliessender Anwendung von $A\to abc$
+entsteht fuer $n\ge 1$
+\[
+    a^n b\,c(Bc)^{n-1}.
+\]
+Mit $cB\to Bc$ werden alle $B$-Symbole nach links vor die $c$-Symbole geschoben:
+\[
+    a^n b\,c(Bc)^{n-1}
+    \Rightarrow^*
+    a^n bB^{n-1}c^n.
+\]
+Danach wandelt $bB\to bb$ die $B$-Symbole von links nach rechts in $b$ um:
+\[
+    a^n bB^{n-1}c^n
+    \Rightarrow^*
+    a^n b^n c^n.
+\]
+Fuer $n=0$ erzeugt $S\to\varepsilon$ das leere Wort. Somit erzeugt die Grammatik genau
+\[
+    \{a^n b^n c^n\mid n\in\mathbb{Z}_{\ge 0}\}.
+\]
+
+\end{document}

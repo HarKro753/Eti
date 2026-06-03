@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{article}
+\documentclass[a4paper,12pt,fleqn]{article}
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -52,6 +52,7 @@
 \begin{document}
 \raggedright
 \setlength{\parindent}{0pt}
+\setlength{\mathindent}{0pt}
 
 {\LARGE\bfseries ETI -- Aufgabenblatt 5 \\ Hausaufgaben\par}
 \vspace{2em}
@@ -220,6 +221,20 @@ L(G_*)=L_1^*.
 \taskbox{
 Bestimmen Sie die Sprache, die von dem gegebenen PDA akzeptiert wird, und geben Sie eine moeglichst
 intuitive Beschreibung an.
+
+\medskip
+\begin{center}
+\begin{tikzpicture}[node distance=3.6cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (q1) {$q_1$};
+    \node[state, accepting, right=of q1] (q2) {$q_2$};
+
+    \path (q0) edge node[above] {$\varepsilon,\varepsilon\to\$$} (q1)
+          (q1) edge[loop above] node {$\mathtt{(},\varepsilon\to 1$} ()
+          (q1) edge[loop below] node {$\mathtt{)},1\to\varepsilon$} ()
+          (q1) edge node[above] {$\varepsilon,\$\to\varepsilon$} (q2);
+\end{tikzpicture}
+\end{center}
 }
 
 \methodbox{
@@ -282,26 +297,49 @@ $i+k=j$.
 Wir beschreiben einen PDA $P$ ueber dem Eingabealphabet $\{a,b,c\}$. Zuerst legt $P$ den Bodenmarker
 $\$$ auf den Stack und waehlt dann nichtdeterministisch einen der beiden folgenden Zweige.
 
+\medskip
+\textbf{Gemeinsamer Start und nichtdeterministische Wahl.}
+
+\begin{center}
+\begin{tikzpicture}[node distance=3.6cm]
+    \node[state, initial] (q0) {$q_0$};
+    \node[state, right=of q0] (qw) {$q_w$};
+    \node[state, above right=of qw] (r0) {$r_0$};
+    \node[state, below right=of qw] (sa) {$s_a$};
+
+    \path (q0) edge node[above] {$\varepsilon,\varepsilon\to\$$} (qw)
+          (qw) edge node[above,sloped] {$\varepsilon,\varepsilon\to\varepsilon$} (r0)
+          (qw) edge node[below,sloped] {$\varepsilon,\varepsilon\to\varepsilon$} (sa);
+\end{tikzpicture}
+\end{center}
+
 \subsection*{Zweig 1: Pruefe $2j=3k$}
 
 Die $a$'s werden ignoriert. Fuer jedes gelesene $b$ werden zwei Symbole $X$ auf den Stack gelegt. Fuer
 jedes gelesene $c$ werden drei Symbole $X$ entfernt. Am Ende wird akzeptiert, wenn genau der
 Bodenmarker erreicht ist.
 
-Eine moegliche Uebergangsbeschreibung ist:
-\[
-\begin{array}{rcl}
-r_0 &:& a,\varepsilon\to\varepsilon \text{ bleibt in } r_0,\\
-r_0 &:& \varepsilon,\varepsilon\to\varepsilon \text{ nach } r_b,\\
-r_b &:& b,\varepsilon\to X \text{ nach } r_{b,2},\\
-r_{b,2} &:& \varepsilon,\varepsilon\to X \text{ nach } r_b,\\
-r_b &:& c,X\to\varepsilon \text{ nach } r_{c,1},\\
-r_{c,1} &:& \varepsilon,X\to\varepsilon \text{ nach } r_{c,2},\\
-r_{c,2} &:& \varepsilon,X\to\varepsilon \text{ nach } r_c,\\
-r_c &:& c,X\to\varepsilon \text{ nach } r_{c,1},\\
-r_b,r_c &:& \varepsilon,\$\to\varepsilon \text{ nach } q_{\mathrm{acc}}.
-\end{array}
-\]
+\begin{center}
+\begin{tikzpicture}[node distance=2.35cm and 2.75cm]
+    \node[state, initial] (r0) {$r_0$};
+    \node[state, right=of r0] (rb) {$r_b$};
+    \node[state, right=of rb] (rc1) {$r_{c,1}$};
+    \node[state, right=of rc1] (rc2) {$r_{c,2}$};
+    \node[state, below=of rc1] (rc) {$r_c$};
+    \node[state, accepting, below=of rb] (qacc) {$q_{\mathrm{acc}}$};
+
+    \path (r0) edge[loop above] node {$a,\varepsilon\to\varepsilon$} ()
+          (r0) edge node[above] {$\varepsilon,\varepsilon\to\varepsilon$} (rb)
+          (rb) edge[loop above] node {$b,\varepsilon\to XX$} ()
+          (rb) edge node[above] {$c,X\to\varepsilon$} (rc1)
+          (rc1) edge node[above] {$\varepsilon,X\to\varepsilon$} (rc2)
+          (rc2) edge[bend left=18] node[right] {$\varepsilon,X\to\varepsilon$} (rc)
+          (rc) edge[bend left=18] node[left] {$c,X\to\varepsilon$} (rc1)
+          (rb) edge node[left] {$\varepsilon,\$\to\varepsilon$} (qacc)
+          (rc) edge node[below,sloped] {$\varepsilon,\$\to\varepsilon$} (qacc);
+\end{tikzpicture}
+\end{center}
+
 Dieser Zweig akzeptiert genau dann, wenn die Anzahl der gelegten $X$ gleich der Anzahl der entfernten
 $X$ ist, also genau dann, wenn $2j=3k$ gilt.
 
@@ -312,19 +350,27 @@ $A$-Symbole entfernt. Sobald keine $A$-Symbole mehr uebrig sind, wird fuer jedes
 Symbol $B$ auf den Stack gelegt. In der $c$-Phase wird fuer jedes $c$ ein $B$ entfernt. Am Ende wird
 akzeptiert, wenn genau der Bodenmarker erreicht ist.
 
-Eine moegliche Uebergangsbeschreibung ist:
-\[
-\begin{array}{rcl}
-s_a &:& a,\varepsilon\to A \text{ bleibt in } s_a,\\
-s_a &:& b,A\to\varepsilon \text{ nach } s_{\mathrm{pop}},\\
-s_{\mathrm{pop}} &:& b,A\to\varepsilon \text{ bleibt in } s_{\mathrm{pop}},\\
-s_a,s_{\mathrm{pop}} &:& \varepsilon,\$\to \$ \text{ nach } s_{\mathrm{push}},\\
-s_{\mathrm{push}} &:& b,\varepsilon\to B \text{ bleibt in } s_{\mathrm{push}},\\
-s_{\mathrm{push}} &:& c,B\to\varepsilon \text{ nach } s_c,\\
-s_c &:& c,B\to\varepsilon \text{ bleibt in } s_c,\\
-s_{\mathrm{push}},s_c &:& \varepsilon,\$\to\varepsilon \text{ nach } q_{\mathrm{acc}}.
-\end{array}
-\]
+\begin{center}
+\begin{tikzpicture}[node distance=2.6cm and 3.0cm]
+    \node[state, initial] (sa) {$s_a$};
+    \node[state, right=of sa] (spop) {$s_{\mathrm{pop}}$};
+    \node[state, below=of sa] (spush) {$s_{\mathrm{push}}$};
+    \node[state, right=of spush] (sc) {$s_c$};
+    \node[state, accepting, below=of sc] (qacc) {$q_{\mathrm{acc}}$};
+
+    \path (sa) edge[loop above] node {$a,\varepsilon\to A$} ()
+          (sa) edge node[above] {$b,A\to\varepsilon$} (spop)
+          (spop) edge[loop above] node {$b,A\to\varepsilon$} ()
+          (sa) edge node[left] {$\varepsilon,\$\to\$$} (spush)
+          (spop) edge node[below,sloped] {$\varepsilon,\$\to\$$} (spush)
+          (spush) edge[loop below] node {$b,\varepsilon\to B$} ()
+          (spush) edge node[above] {$c,B\to\varepsilon$} (sc)
+          (sc) edge[loop above] node {$c,B\to\varepsilon$} ()
+          (spush) edge[bend right=12] node[below,sloped] {$\varepsilon,\$\to\varepsilon$} (qacc)
+          (sc) edge node[right] {$\varepsilon,\$\to\varepsilon$} (qacc);
+\end{tikzpicture}
+\end{center}
+
 Dieser Zweig akzeptiert genau dann, wenn die Zahl der $b$'s ausreicht, um zuerst alle $i$ Symbole fuer
 die $a$'s zu entfernen, und danach genau $k$ weitere $b$'s fuer die $c$'s gespeichert wurden. Also gilt
 genau
