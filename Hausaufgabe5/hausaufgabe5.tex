@@ -296,18 +296,26 @@ Der PDA legt zuerst einen Bodenmarker $\$$ auf den Stack. Danach gilt im Zustand
 Also wird fuer jede oeffnende Klammer ein $1$ auf den Stack gelegt, und fuer jede schliessende Klammer
 wird ein $1$ entfernt. Akzeptiert wird genau dann, wenn am Ende wieder nur der Bodenmarker uebrig ist.
 
-Damit ist die akzeptierte Sprache
+Formal zaehlen wir fuer ein Wort $u$ die Anzahl der oeffnenden und schliessenden Klammern mit
+$|u|_{\texttt{(}}$ bzw. $|u|_{\texttt{)}}$. Schreibe $u\preceq w$, wenn $u$ ein Praefix von $w$ ist.
+Dann ist die akzeptierte Sprache
 \[
 \boxed{L(P)=D}
 \]
 mit
 \[
-\begin{aligned}
-D=\{w\in\{\texttt{(},\texttt{)}\}^* \mid{}&
-\text{jeder Praefix von }w\text{ hat mindestens so viele \texttt{(} wie \texttt{)},}\\
-&\text{und insgesamt sind es gleich viele}\}.
-\end{aligned}
+D=\{w\in\{\texttt{(},\texttt{)}\}^*
+\mid \forall u\preceq w:\ |u|_{\texttt{(}}\ge |u|_{\texttt{)}}\
+\text{ und }\ |w|_{\texttt{(}}=|w|_{\texttt{)}}\}.
 \]
+
+Begruendung: Nach dem Lesen eines Praefixes $u$ liegt ueber dem Bodenmarker genau
+$|u|_{\texttt{(}}-|u|_{\texttt{)}}$-mal das Symbol $1$ auf dem Stack, solange dieser Wert nicht
+negativ wird. Wird er negativ, muesste der Automat bei einer schliessenden Klammer ein $1$ entfernen,
+das nicht vorhanden ist; dieser Berechnungspfad bricht also ab. Der Uebergang nach $q_2$ ist genau dann
+moeglich, wenn keine $1$ mehr ueber dem Bodenmarker liegen, also wenn
+$|w|_{\texttt{(}}=|w|_{\texttt{)}}$ gilt.
+
 Intuitiv ist das die Sprache der korrekt geklammerten Woerter mit genau einer Klammerart.
 
 \examplebox{

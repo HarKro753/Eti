@@ -1,0 +1,258 @@
+\documentclass[a4paper,12pt,fleqn]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+
+\newcommand{\methodbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Methodik / Definition.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\examplebox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Beispiele.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\taskbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Aufgabenstellung.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\mathindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 4 \\ Praesenzaufgaben\par}
+\vspace{2em}
+
+\section*{Aufgabe 4.1}
+
+\taskbox{
+Geben Sie eine CFG fuer die Sprache
+\[
+    \{a^n b^m c^m d^n\mid n,m\ge 0\}
+\]
+an.
+}
+
+\methodbox{
+Die aeusseren Symbole $a$ und $d$ muessen paarweise gleich oft erzeugt werden.
+Unabhaengig davon werden innen gleich viele $b$ und $c$ erzeugt. Deshalb trennen wir
+die beiden Zaehler in zwei Nonterminale.
+}
+
+Eine passende kontextfreie Grammatik ist
+\[
+G=(\{S,T\},\{a,b,c,d\},R,S)
+\]
+mit den Produktionen
+\[
+\begin{aligned}
+S &\to aSd \mid T,\\
+T &\to bTc \mid \varepsilon.
+\end{aligned}
+\]
+
+Nach $n$ Anwendungen von $S\to aSd$ entsteht aussen $a^n$ und $d^n$.
+Danach erzeugt $T$ durch $m$ Anwendungen von $T\to bTc$ genau $b^m c^m$ und beendet
+mit $T\to\varepsilon$. Somit gilt
+\[
+    L(G)=\{a^n b^m c^m d^n\mid n,m\ge 0\}.
+\]
+
+\section*{Aufgabe 4.2}
+
+\taskbox{
+Betrachten Sie
+\[
+T=\{0^i b\mid i\ge 1,\ b\in\{0,1\}^*,\ |b|_0\le i\}
+\]
+und die CFG $G=(V,\Sigma,R,S)$ mit
+\[
+V=\{S,X,Y\},\qquad \Sigma=\{0,1\}
+\]
+und Regeln
+\[
+\begin{aligned}
+S&\to XY,\\
+X&\to 0X\mid 0,\\
+Y&\to Y1\mid 1Y\mid Y0\mid 0Y\mid 1\mid 0\mid \varepsilon.
+\end{aligned}
+\]
+Bestimmen Sie $L(G)$ und vergleichen Sie diese Sprache mit $T$.
+}
+
+Das Nonterminal $X$ erzeugt genau eine nichtleere Folge von Nullen:
+\[
+    L(X)=\{0^i\mid i\ge 1\}=0^+.
+\]
+
+Das Nonterminal $Y$ erzeugt alle Woerter ueber $\{0,1\}$. Einerseits sind
+$0,1,\varepsilon$ direkt erzeugbar. Andererseits duerfen beliebig oft links oder rechts
+eine $0$ oder eine $1$ angefuegt werden. Also gilt
+\[
+    L(Y)=\{0,1\}^*.
+\]
+
+Damit ist
+\[
+    \boxed{L(G)=0^+\{0,1\}^*}.
+\]
+
+\medskip
+Jedes Wort aus $T$ beginnt mit mindestens einer $0$. Deshalb gilt
+\[
+    T\subseteq L(G).
+\]
+Die Inklusion ist echt. Zum Beispiel liegt
+\[
+    0100\in L(G),
+\]
+denn es beginnt mit einer $0$. Fuer $T$ ist aber nur die Zerlegung
+$0100=0^1\cdot 100$ moeglich, weil direkt danach eine $1$ kommt. Dabei enthaelt
+$100$ zwei Nullen, also
+\[
+    |100|_0=2>1.
+\]
+Folglich ist $0100\notin T$ und damit
+\[
+    \boxed{T\subsetneq L(G)}.
+\]
+
+\section*{Aufgabe 4.3}
+
+\taskbox{
+Diskutieren und begruenden Sie, ob die Sprachen aus der vorherigen Aufgabe
+kontextfrei oder sogar regulaer sind.
+}
+
+\methodbox{
+Regulaere Sprachen sind unter Konkatenation, Vereinigung und Schnitt mit regulaeren
+Sprachen abgeschlossen. Kontextfreie Sprachen koennen durch CFGs beschrieben werden.
+Um Nicht-Regulaerheit zu zeigen, schneiden wir mit einer einfachen regulaeren Sprache
+und wenden das Pumping-Lemma an.
+}
+
+\textbf{Die Sprache $L(G)$.}
+
+Aus Aufgabe 4.2 wissen wir
+\[
+    L(G)=0^+\{0,1\}^*.
+\]
+Diese Sprache ist regulaer, zum Beispiel beschrieben durch den regulaeren Ausdruck
+\[
+    00^*(0\cup 1)^*.
+\]
+Damit ist $L(G)$ insbesondere auch kontextfrei.
+
+\medskip
+\textbf{Die Sprache $T$.}
+
+Die Sprache $T$ ist kontextfrei, denn Aufgabe 4.4 gibt explizit eine CFG fuer $T$ an.
+Sie ist jedoch nicht regulaer.
+
+\medskip
+Angenommen, $T$ waere regulaer. Dann waere auch der Schnitt mit der regulaeren Sprache
+$0^*10^*$ regulaer:
+\[
+K:=T\cap 0^*10^*
+  =\{0^i10^j\mid i\ge 1,\ 0\le j\le i\}.
+\]
+
+Sei $p$ die Pumping-Laenge von $K$. Betrachte
+\[
+    w=0^p10^p\in K.
+\]
+Nach dem Pumping-Lemma gibt es eine Zerlegung $w=xyz$ mit
+$|xy|\le p$, $|y|\ge 1$ und $xy^rz\in K$ fuer alle $r\ge 0$.
+Wegen $|xy|\le p$ besteht $y$ nur aus Nullen aus dem ersten Block, also
+$y=0^\ell$ mit $\ell\ge 1$.
+
+Pumpe nun nach unten, also $r=0$:
+\[
+    xz=0^{p-\ell}10^p.
+\]
+Hier stehen nach der $1$ mehr Nullen als davor. Also ist
+\[
+    p>p-\ell,
+\]
+und damit $xz\notin K$. Das widerspricht dem Pumping-Lemma. Also ist $K$ nicht
+regulaer und folglich kann $T$ nicht regulaer sein.
+
+\section*{Aufgabe 4.4}
+
+\taskbox{
+Geben Sie eine Grammatik $H$ mit $L(H)=T$ an.
+}
+
+\methodbox{
+Jede fuehrende $0$ erzeugt ein Guthaben fuer hoechstens eine $0$ im Restwort $b$.
+Ein Hilfsnonterminal erzeugt daher entweder nur Einsen oder genau eine Null mit
+beliebig vielen Einsen davor und danach.
+}
+
+Wir definieren
+\[
+H=(\{S,C,D\},\{0,1\},R,S)
+\]
+mit Produktionen
+\[
+\begin{aligned}
+S &\to 0SC \mid 0C,\\
+C &\to 1C \mid 0D \mid \varepsilon,\\
+D &\to 1D \mid \varepsilon.
+\end{aligned}
+\]
+
+Dabei gilt
+\[
+    L(C)=1^*\ \cup\ 1^*01^*.
+\]
+Also erzeugt jedes $C$ hoechstens eine Null. Das Startsymbol $S$ erzeugt bei jeder
+Rekursion zuerst eine fuehrende $0$ und haengt spaeter ein $C$ an. Nach $i\ge 1$
+fuehrenden Nullen entstehen genau $i$ solche $C$-Bloecke:
+\[
+    S\Rightarrow^* 0^i C_i C_{i-1}\cdots C_1.
+\]
+Da jeder $C$-Block hoechstens eine Null erzeugt, enthaelt der erzeugte Rest hoechstens
+$i$ Nullen. Somit ist jedes erzeugte Wort in $T$.
+
+\medskip
+Umgekehrt sei $w\in T$. Dann gibt es eine Zerlegung
+\[
+    w=0^i b
+\]
+mit $i\ge 1$ und $|b|_0\le i$. Zerlege $b$ entlang seiner Nullen in hoechstens $i$
+Teile, sodass jeder Teil entweder nur aus Einsen besteht oder genau eine Null enthaelt.
+Jeder dieser Teile wird von $C$ erzeugt; fehlende Teile erzeugen $\varepsilon$.
+Damit kann $H$ genau dieses Wort $w$ ableiten.
+
+Folglich gilt
+\[
+    \boxed{L(H)=T}.
+\]
+
+\end{document}

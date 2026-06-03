@@ -1,0 +1,351 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+    derivation tree/.style={
+        grow=down,
+        level distance=1.15cm,
+        sibling distance=1.35cm,
+        every node/.style={inner sep=1.5pt},
+        edge from parent/.style={draw,-}
+    },
+}
+
+\newcommand{\methodbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Methodik / Definition.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\examplebox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Beispiele.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\taskbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Aufgabenstellung.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\bits}{\{0,1\}}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 4 \\ Hausaufgaben\par}
+\vspace{2em}
+
+\section*{Aufgabe 4.5}
+
+\taskbox{
+Geben Sie fuer jede der drei Ableitungsregeln fuer $S$ ein Wort der Laenge fuenf an, das von der
+Grammatik generiert wird, und zeichnen Sie fuer jedes dieser Woerter einen Ableitungsbaum.
+Ist die Grammatik eindeutig? Begruenden Sie Ihre Antwort.
+}
+
+\methodbox{
+Ein Ableitungsbaum hat innen Nichtterminale und an den Blaettern Terminale. Die Blaetter von links
+nach rechts ergeben das erzeugte Wort. Um zu zeigen, dass eine Grammatik nicht eindeutig ist,
+genuegt ein einziges Wort mit zwei verschiedenen Ableitungsbaeumen.
+}
+
+\textbf{Regel $S\to 0F1$.}
+
+Wir waehlen
+\[
+    00\#11.
+\]
+Eine Ableitung ist
+\[
+    S\Rightarrow 0F1\Rightarrow 00\#11.
+\]
+
+\begin{center}
+\begin{tikzpicture}[
+    derivation tree,
+    level 1/.style={sibling distance=2.2cm},
+    level 2/.style={sibling distance=0.9cm}
+]
+    \node {$S$}
+        child {node {$0$}}
+        child {node {$F$}
+            child {node {$0$}}
+            child {node {$\#$}}
+            child {node {$1$}}
+        }
+        child {node {$1$}};
+\end{tikzpicture}
+\end{center}
+
+\textbf{Regel $S\to N1Y$.}
+
+Wir waehlen
+\[
+    0\#101.
+\]
+Eine Ableitung ist
+\[
+    S\Rightarrow N1Y\Rightarrow 0\#1Y\Rightarrow 0\#10Y\Rightarrow 0\#101.
+\]
+
+\begin{center}
+\begin{tikzpicture}[
+    derivation tree,
+    level 1/.style={sibling distance=2.5cm},
+    level 2/.style={sibling distance=1.0cm},
+    level 3/.style={sibling distance=1.0cm},
+    level 4/.style={sibling distance=0.8cm}
+]
+    \node {$S$}
+        child {node {$N$}
+            child {node {$0$}}
+            child {node {$Y$}
+                child {node {$\varepsilon$}}
+            }
+            child {node {$\#$}}
+        }
+        child {node {$1$}}
+        child {node {$Y$}
+            child {node {$X$}
+                child {node {$0$}}
+            }
+            child {node {$Y$}
+                child {node {$X$}
+                    child {node {$1$}}
+                }
+                child {node {$Y$}
+                    child {node {$\varepsilon$}}
+                }
+            }
+        };
+\end{tikzpicture}
+\end{center}
+
+\textbf{Regel $S\to E0Y$.}
+
+Wir waehlen
+\[
+    1\#001.
+\]
+Eine Ableitung ist
+\[
+    S\Rightarrow E0Y\Rightarrow 1\#0Y\Rightarrow 1\#00Y\Rightarrow 1\#001.
+\]
+
+\begin{center}
+\begin{tikzpicture}[
+    derivation tree,
+    level 1/.style={sibling distance=2.5cm},
+    level 2/.style={sibling distance=1.0cm},
+    level 3/.style={sibling distance=1.0cm},
+    level 4/.style={sibling distance=0.8cm}
+]
+    \node {$S$}
+        child {node {$E$}
+            child {node {$1$}}
+            child {node {$Y$}
+                child {node {$\varepsilon$}}
+            }
+            child {node {$\#$}}
+        }
+        child {node {$0$}}
+        child {node {$Y$}
+            child {node {$X$}
+                child {node {$0$}}
+            }
+            child {node {$Y$}
+                child {node {$X$}
+                    child {node {$1$}}
+                }
+                child {node {$Y$}
+                    child {node {$\varepsilon$}}
+                }
+            }
+        };
+\end{tikzpicture}
+\end{center}
+
+\textbf{Eindeutigkeit.}
+Die Grammatik ist nicht eindeutig. Das Wort $00\#11$ hat mindestens zwei verschiedene Ableitungen:
+\[
+    S\Rightarrow 0F1\Rightarrow 00\#11
+\]
+und
+\[
+    S\Rightarrow N1Y\Rightarrow 0Y\#1Y
+      \Rightarrow 00\#1Y
+      \Rightarrow 00\#11.
+\]
+Da schon die erste verwendete Regel fuer $S$ verschieden ist, sind die zugehoerigen
+Ableitungsbaeume verschieden. Folglich ist $G$ nicht eindeutig.
+
+\section*{Aufgabe 4.6}
+
+\taskbox{
+Geben Sie fuer jedes Nonterminal $v\in V$ der Grammatik $G$ eine moeglichst einfache Beschreibung
+der von $v$ generierten Sprache $L(G_v)$ an.
+}
+
+\methodbox{
+Fuer ein Wort $w\in\bits^*$ bezeichnet $w^R$ die Umkehrung von $w$.
+Mit $\overline{w}$ bezeichnen wir das bitweise Komplement, also den Tausch von $0$ und $1$.
+}
+
+Die von den Nichtterminalen erzeugten Sprachen sind:
+\[
+\begin{aligned}
+L(X) &= \bits,\\
+L(Y) &= \bits^*,\\
+L(F) &= \{\,w\#(\overline{w})^R \mid w\in\bits^*0\,\},\\
+L(N) &= \{\,u0v\#w \mid u,v,w\in\bits^*,\ |u|=|w|\,\},\\
+L(E) &= \{\,u1v\#w \mid u,v,w\in\bits^*,\ |u|=|w|\,\},\\
+L(S) &= \{\,u\#v \mid u,v\in\bits^*,\
+            \exists i\in\{1,\ldots,\min(|u|,|v|)\}: u_i\ne v_i\,\}.
+\end{aligned}
+\]
+In der letzten Zeile sind die Woerter $u$ und $v$ von links nach rechts nummeriert, also
+$u=u_1\cdots u_{|u|}$ und $v=v_1\cdots v_{|v|}$.
+
+\medskip
+\textbf{Begruendung.}
+$X$ erzeugt genau ein Bit. $Y$ erzeugt durch wiederholtes Voranstellen eines Bits und anschliessendes
+Beenden mit $\varepsilon$ genau alle Binaerwoerter.
+
+\medskip
+Bei $F$ ist die Basis $0\#1$. Jede rekursive Regel fuegt links ein Bit und rechts das komplementaere
+Bit an. Weil rechts aussen angefuegt wird, steht rechts die umgekehrte komplementierte linke Seite.
+Also gilt
+\[
+    L(F)=\{\,w\#(\overline{w})^R \mid w\in\bits^*0\,\}.
+\]
+
+\medskip
+Bei $N$ ist die Basis $0Y\#$. Jede Anwendung von $XNX$ fuegt links und rechts je ein beliebiges Bit
+hinzu. Deshalb entstehen genau die Woerter $u0v\#w$ mit gleich langen Randstuecken $u$ und $w$.
+Analog entsteht bei $E$ dieselbe Form, nur mit einer ausgezeichneten $1$ statt der ausgezeichneten $0$.
+
+\medskip
+Fuer $S$ markieren die Regeln $N1Y$ und $E0Y$ eine Position, an der die linke und rechte Seite des
+$\#$ verschieden sind. Genauer erzeugt $N1Y$ eine Position mit $0$ links und $1$ rechts; $E0Y$
+erzeugt eine Position mit $1$ links und $0$ rechts. Die Regel $0F1$ erzeugt nur Woerter, die bereits
+in diese Beschreibung fallen, denn links beginnt das Wort mit $0$ und rechts beginnt es mit $1$.
+
+\section*{Aufgabe 4.7}
+
+\taskbox{
+Es sei $L=\{a^ib^j\mid i,j\in\mathbb{Z}_{\ge 0},\ i\ne j\}$. Beweisen Sie, dass $L$ nicht regulaer ist.
+}
+
+\methodbox{
+Regulaere Sprachen sind abgeschlossen unter Differenz. Wenn $A$ und $B$ regulaer sind, dann ist
+auch $A\setminus B=A\cap \overline{B}$ regulaer.
+}
+
+Wir beweisen die Aussage per Widerspruch. Angenommen, $L$ waere regulaer.
+Die Sprache
+\[
+    a^*b^*
+\]
+ist regulaer. Wegen der Abschlusseigenschaften regulaerer Sprachen waere dann auch
+\[
+    a^*b^*\setminus L
+\]
+regulaer.
+
+Nun gilt aber
+\[
+    a^*b^*\setminus L
+    =
+    \{a^ib^j\mid i,j\in\mathbb{Z}_{\ge 0},\ i=j\}
+    =
+    \{a^nb^n\mid n\in\mathbb{Z}_{\ge 0}\}.
+\]
+Diese Sprache ist nicht regulaer. Das ist ein Widerspruch. Also kann $L$ nicht regulaer sein.
+
+\section*{Aufgabe 4.8}
+
+\taskbox{
+Geben Sie eine kontextfreie Grammatik an, die
+$L=\{a^ib^j\mid i,j\in\mathbb{Z}_{\ge 0},\ i\ne j\}$ generiert. Begruenden Sie zudem die Korrektheit.
+}
+
+\methodbox{
+Wir zerlegen $L$ in die beiden Faelle $i>j$ und $i<j$. Danach erzeugt eine Startregel die Vereinigung
+dieser beiden kontextfreien Sprachen.
+}
+
+Eine passende Grammatik ist
+\[
+G_L=(V,\{a,b\},R,S)
+\]
+mit
+\[
+V=\{S,A,B,C,D\}
+\]
+und Regeln
+\[
+\begin{aligned}
+S &\to A \mid B,\\
+A &\to aAb \mid C,\\
+C &\to aC \mid a,\\
+B &\to aBb \mid D,\\
+D &\to bD \mid b.
+\end{aligned}
+\]
+
+\textbf{Korrektheit.}
+Das Nichtterminal $A$ erzeugt zuerst gleich viele $a$- und $b$-Paare durch Regeln der Form
+$aAb$ und beendet dann mit mindestens einem zusaetzlichen $a$ aus $C$. Also gilt
+\[
+    L(A)=\{a^ib^j\mid i>j\}.
+\]
+Insbesondere werden auch Woerter der Form $a^i$ mit $i>0$ erzeugt, indem keine $b$-Paare benutzt
+werden.
+
+\medskip
+Analog erzeugt $B$ zuerst gleich viele $a$- und $b$-Paare und beendet dann mit mindestens einem
+zusaetzlichen $b$ aus $D$. Also gilt
+\[
+    L(B)=\{a^ib^j\mid i<j\}.
+\]
+Insbesondere werden auch Woerter der Form $b^j$ mit $j>0$ erzeugt.
+
+\medskip
+Die Startregel $S\to A\mid B$ bildet die Vereinigung beider Faelle:
+\[
+    L(G_L)=L(A)\cup L(B)
+    =
+    \{a^ib^j\mid i,j\in\mathbb{Z}_{\ge 0},\ i\ne j\}.
+\]
+
+\end{document}
