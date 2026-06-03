@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
+\usepackage{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,arrows.meta}
 
@@ -12,6 +13,9 @@
     every state/.style={thick,minimum size=1cm},
     initial text={},
 }
+
+\newcommand{\changed}[1]{\textcolor{blue}{#1}}
+\newcommand{\removed}[1]{\textcolor{red}{#1}}
 
 \newcommand{\methodbox}[1]{%
 \medskip
@@ -62,10 +66,12 @@
 \taskbox{
 Bringen Sie die Grammatik
 \[
-S\to SaSb\mid A,\qquad
-A\to \varepsilon\mid B\mid a,\qquad
-B\to bB\mid A\mid C,\qquad
-C\to c
+\begin{aligned}
+S &\to SaSb \mid A,\\
+A &\to \varepsilon \mid B \mid a,\\
+B &\to bB \mid A \mid C,\\
+C &\to c
+\end{aligned}
 \]
 in Chomsky-Normalform. Das Startsymbol ist $S$.
 }
@@ -79,6 +85,10 @@ hat. Die letzte Regel ist nur fuer die Startvariable erlaubt, wenn $\varepsilon$
 Damit die Startvariable nicht rechts vorkommt, fuehrt man zuerst eine neue Startvariable ein.
 Danach entfernt man $\varepsilon$-Regeln, Kettenregeln und ersetzt Terminale in laengeren rechten
 Seiten durch eigene Variablen.
+
+\smallskip
+In den Vergleichstabellen markiert \changed{blau}, was neu hinzukommt oder ersetzt wird.
+\removed{Rot} markiert Regeln, die in diesem Schritt verschwinden.
 }
 
 \textbf{Schritt 1: Neue Startvariable.}
@@ -98,31 +108,55 @@ Nullable sind $A$, $B$ und $S$, denn
 \]
 Aus $S\to SaSb$ entstehen daher alle Varianten, in denen die beiden Vorkommen von $S$
 optional gestrichen werden. Nur fuer die neue Startvariable behalten wir $\varepsilon$:
-\[
-\begin{aligned}
-S_0 &\to S \mid \varepsilon,\\
-S &\to SaSb \mid aSb \mid Sab \mid ab \mid A,\\
-A &\to B \mid a,\\
-B &\to bB \mid b \mid A \mid C,\\
-C &\to c.
-\end{aligned}
-\]
+
+\begin{flushleft}
+\scriptsize
+\begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+\textbf{Vorher} & \textbf{Nachher ohne $\varepsilon$-Regeln}\\[0.4em]
+$\begin{aligned}
+S_0 &\to S\\
+S   &\to SaSb \mid A\\
+A   &\to \removed{\varepsilon} \mid B \mid a\\
+B   &\to bB \mid A \mid C\\
+C   &\to c
+\end{aligned}$
+&
+$\begin{aligned}
+S_0 &\to S \mid \changed{\varepsilon}\\
+S   &\to SaSb \mid \changed{aSb} \mid \changed{Sab} \mid \changed{ab} \mid A\\
+A   &\to B \mid a\\
+B   &\to bB \mid \changed{b} \mid A \mid C\\
+C   &\to c
+\end{aligned}$
+\end{tabular}
+\end{flushleft}
 
 \textbf{Schritt 3: Kettenregeln entfernen.}
 
 Die Kettenregeln sind $S_0\to S$, $S\to A$, $A\to B$, $B\to A$ und $B\to C$.
 Wir ersetzen sie, indem wir die nichttrivialen Regeln der erreichbaren Variablen direkt uebernehmen:
-\[
-\begin{aligned}
-S_0 &\to \varepsilon \mid SaSb \mid aSb \mid Sab \mid ab
-        \mid a \mid bB \mid b \mid c,\\
-S &\to SaSb \mid aSb \mid Sab \mid ab
-        \mid a \mid bB \mid b \mid c,\\
-A &\to a \mid bB \mid b \mid c,\\
-B &\to bB \mid a \mid b \mid c,\\
-C &\to c.
-\end{aligned}
-\]
+
+\begin{flushleft}
+\scriptsize
+\begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+\textbf{Vorher} & \textbf{Nachher ohne Kettenregeln}\\[0.4em]
+$\begin{aligned}
+S_0 &\to \varepsilon \mid \removed{S}\\
+S   &\to SaSb \mid aSb \mid Sab \mid ab \mid \removed{A}\\
+A   &\to \removed{B} \mid a\\
+B   &\to bB \mid b \mid \removed{A} \mid \removed{C}\\
+C   &\to c
+\end{aligned}$
+&
+$\begin{aligned}
+S_0 &\to \varepsilon \mid \changed{SaSb} \mid \changed{aSb} \mid \changed{Sab} \mid \changed{ab} \mid \changed{a} \mid \changed{bB} \mid \changed{b} \mid \changed{c}\\
+S   &\to SaSb \mid aSb \mid Sab \mid ab \mid \changed{a} \mid \changed{bB} \mid \changed{b} \mid \changed{c}\\
+A   &\to a \mid \changed{bB} \mid \changed{b} \mid \changed{c}\\
+B   &\to bB \mid \changed{a} \mid b \mid \changed{c}\\
+C   &\to c
+\end{aligned}$
+\end{tabular}
+\end{flushleft}
 Die Variablen $A$ und $C$ sind nun vom Startsymbol aus nicht mehr erreichbar und koennen entfernt
 werden.
 
@@ -145,20 +179,29 @@ mit
 V'=\{S_0,S,B,T_a,T_b,E,F,G\}
 \]
 und Regeln
-\[
-\begin{aligned}
-S_0 &\to \varepsilon \mid SF \mid T_aG \mid SE \mid T_aT_b
-        \mid a \mid T_bB \mid b \mid c,\\
-S &\to SF \mid T_aG \mid SE \mid T_aT_b
-        \mid a \mid T_bB \mid b \mid c,\\
-B &\to T_bB \mid a \mid b \mid c,\\
-E &\to T_aT_b,\\
-F &\to T_aG,\\
-G &\to ST_b,\\
-T_a &\to a,\\
-T_b &\to b.
-\end{aligned}
-\]
+
+\begin{flushleft}
+\scriptsize
+\begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+\textbf{Vorher} & \textbf{Nachher in CNF}\\[0.4em]
+$\begin{aligned}
+S_0 &\to \varepsilon \mid \removed{SaSb} \mid \removed{aSb} \mid \removed{Sab} \mid \removed{ab} \mid a \mid \removed{bB} \mid b \mid c\\
+S   &\to \removed{SaSb} \mid \removed{aSb} \mid \removed{Sab} \mid \removed{ab} \mid a \mid \removed{bB} \mid b \mid c\\
+B   &\to \removed{bB} \mid a \mid b \mid c
+\end{aligned}$
+&
+$\begin{aligned}
+S_0 &\to \varepsilon \mid \changed{SF} \mid \changed{T_aG} \mid \changed{SE} \mid \changed{T_aT_b} \mid a \mid \changed{T_bB} \mid b \mid c\\
+S   &\to \changed{SF} \mid \changed{T_aG} \mid \changed{SE} \mid \changed{T_aT_b} \mid a \mid \changed{T_bB} \mid b \mid c\\
+B   &\to \changed{T_bB} \mid a \mid b \mid c\\
+E   &\to \changed{T_aT_b}\\
+F   &\to \changed{T_aG}\\
+G   &\to \changed{ST_b}\\
+T_a &\to \changed{a}\\
+T_b &\to \changed{b}
+\end{aligned}$
+\end{tabular}
+\end{flushleft}
 Alle rechten Seiten haben nun die Form $XY$, ein einzelnes Terminal oder, nur bei $S_0$, das Wort
 $\varepsilon$. Ausserdem kommt $S_0$ auf keiner rechten Seite vor.
 
