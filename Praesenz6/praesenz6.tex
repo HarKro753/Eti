@@ -1,0 +1,158 @@
+\documentclass[a4paper,12pt,fleqn]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta}
+
+\tikzset{
+    ->,>=Stealth,
+    node distance=2.5cm,
+    every state/.style={thick,minimum size=1cm},
+    initial text={},
+}
+
+\newcommand{\methodbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Methodik / Definition.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\examplebox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Beispiele.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\newcommand{\taskbox}[1]{%
+\medskip
+\noindent\fbox{%
+    \begin{minipage}{0.94\linewidth}
+    \textbf{Aufgabenstellung.}\par\smallskip
+    \small
+    #1
+    \end{minipage}%
+}
+\medskip\par
+}
+
+\begin{document}
+\raggedright
+\setlength{\parindent}{0pt}
+\setlength{\mathindent}{0pt}
+
+{\LARGE\bfseries ETI -- Aufgabenblatt 6 \\ Praesenzaufgaben\par}
+\vspace{2em}
+
+\section*{Aufgabe 6.1}
+
+\taskbox{
+Entwerfen Sie einen PDA mit hoechstens $4$ Zustaenden und hoechstens $2$ Zeichen im
+Kelleralphabet, der die Sprache
+\[
+    Q=\{w\in\{0,1\}^*\mid |w|_0\ne |w|_1\}
+\]
+erkennt. Begruenden Sie kurz die Korrektheit. Ist der Automat deterministisch?
+}
+
+\methodbox{
+Der Zustand speichert das Vorzeichen der Differenz: In $q_0$ wurden bisher mehr $0$en
+gelesen, in $q_1$ bisher mehr $1$en, und in $q_=$ ist die Differenz $0$.
+Damit nur zwei Kellerzeichen benoetigt werden, speichern wir im Keller nicht die ganze
+Differenz, sondern $|\ |w|_0-|w|_1\ |-1$ viele $A$-Symbole ueber dem Bodensymbol $\$$.
+Eine Differenz vom Betrag $1$ wird also nur durch den Zustand und das Bodensymbol dargestellt.
+}
+
+Wir verwenden
+\[
+    \Gamma=\{A,\$\}
+\]
+und akzeptieren per Endzustand. Der PDA ist
+\[
+P=(\{q_s,q_=,q_0,q_1\},\{0,1\},\{A,\$\},\delta,q_s,\{q_0,q_1\}).
+\]
+Dabei ist $q_s$ nur der Startzustand, der das Bodensymbol in den Keller legt.
+
+\begin{center}
+\begin{tikzpicture}[node distance=3.1cm and 3.7cm]
+    \node[state, initial] (qs) {$q_s$};
+    \node[state, right=of qs] (qe) {$q_=$};
+    \node[state, accepting, above right=of qe] (q0) {$q_0$};
+    \node[state, accepting, below right=of qe] (q1) {$q_1$};
+
+    \path (qs) edge node[above] {$\varepsilon,\varepsilon\to\$$} (qe)
+          (qe) edge[bend left=16] node[above,sloped] {$0,\$\to\$$} (q0)
+          (q0) edge[bend left=16] node[below,sloped] {$1,\$\to\$$} (qe)
+          (qe) edge[bend right=16] node[below,sloped] {$1,\$\to\$$} (q1)
+          (q1) edge[bend right=16] node[above,sloped] {$0,\$\to\$$} (qe)
+          (q0) edge[loop above] node {$\begin{array}{c}
+              0,\$\to A\$\\
+              0,A\to AA\\
+              1,A\to\varepsilon
+          \end{array}$} ()
+          (q1) edge[loop below] node {$\begin{array}{c}
+              1,\$\to A\$\\
+              1,A\to AA\\
+              0,A\to\varepsilon
+          \end{array}$} ();
+\end{tikzpicture}
+\end{center}
+
+\examplebox{
+Fuer $w=001$ gilt:
+\[
+    \$ \xrightarrow{0} \$ \xrightarrow{0} A\$ \xrightarrow{1} \$.
+\]
+Der Automat endet in $q_0$, also wird akzeptiert, denn es gibt eine $0$ mehr als $1$en.
+
+Fuer $w=0101$ wechselt der Automat nach jedem Ausgleich zurueck nach $q_=$:
+\[
+    q_= \xrightarrow{0} q_0 \xrightarrow{1} q_=
+    \xrightarrow{0} q_0 \xrightarrow{1} q_=.
+\]
+Das Wort wird nicht akzeptiert, weil am Ende gleich viele $0$en und $1$en gelesen wurden.
+}
+
+Zur Korrektheit betrachten wir nach jedem gelesenen Praefix $u$ die Differenz
+\[
+    d(u)=|u|_0-|u|_1.
+\]
+Ist $d(u)=0$, befindet sich der Automat in $q_=$ und im Keller liegt nur $\$$. Ist
+$d(u)>0$, befindet er sich in $q_0$; liegen $k$ viele $A$-Symbole auf dem Keller, dann gilt
+$d(u)=k+1$. Ist $d(u)<0$, befindet er sich entsprechend in $q_1$ und bei $k$ vielen
+$A$-Symbolen gilt $-d(u)=k+1$.
+
+\medskip
+Liest der Automat ein Zeichen, das die aktuelle Differenz vergroessert, bleibt er im
+gleichen Vorzeichenzustand und erhoeht den Kellerinhalt passend. Liest er ein Zeichen, das
+die Differenz verkleinert, wird ein $A$ geloescht; beim Uebergang von Betrag $1$ zu Betrag
+$0$ steht oben bereits $\$$, und der Automat wechselt nach $q_=$. Damit gilt nach dem ganzen
+Wort:
+\[
+    w\in Q
+    \quad\Longleftrightarrow\quad
+    d(w)\ne 0
+    \quad\Longleftrightarrow\quad
+    \text{der Automat endet in } q_0 \text{ oder } q_1.
+\]
+Also erkennt der PDA genau $Q$.
+
+\medskip
+Der Automat ist deterministisch. Fuer jede Kombination aus Zustand, naechstem Eingabezeichen
+und Kelleroberseite gibt es hoechstens einen Uebergang. Ausser dem einmaligen Startuebergang
+aus $q_s$ gibt es keine $\varepsilon$-Uebergaenge, die mit Eingabeuebergaengen konkurrieren.
+
+\end{document}

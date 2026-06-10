@@ -280,54 +280,27 @@ intuitive Beschreibung an.
 \end{center}
 }
 
-\methodbox{
-Bei einem PDA bedeutet die Kantenbeschriftung $a,b\to c$: Lies $a$, entferne $b$ vom Stack und lege
-$c$ auf den Stack. Falls ein Eintrag $\varepsilon$ ist, wird an dieser Stelle nichts gelesen, entfernt oder
-hinzugefuegt. Ein nichtdeterministischer PDA akzeptiert, wenn mindestens ein Berechnungspfad in einem
-akzeptierenden Zustand endet, nachdem die Eingabe gelesen wurde.
+\textbf{Sprache.}
+Die akzeptierte Sprache ist
+\[
+\boxed{
+L(P)=\{w\in\{\texttt{(},\texttt{)}\}^*
+\mid \forall u\leq w:\ |u|_{\texttt{(}}\ge |u|_{\texttt{)}}\;
+\text{ und }\ |w|_{\texttt{(}}=|w|_{\texttt{)}}\}
 }
-
-Der PDA legt zuerst einen Bodenmarker $\$$ auf den Stack. Danach gilt im Zustand $q_1$:
-\[
-\texttt{(},\varepsilon\to 1
-\qquad\text{und}\qquad
-\texttt{)},1\to\varepsilon.
 \]
-Also wird fuer jede oeffnende Klammer ein $1$ auf den Stack gelegt, und fuer jede schliessende Klammer
-wird ein $1$ entfernt. Akzeptiert wird genau dann, wenn am Ende wieder nur der Bodenmarker uebrig ist.
+Dabei bedeutet $u\leq w$, dass $u$ ein Praefix von $w$ ist.
 
-Formal zaehlen wir fuer ein Wort $u$ die Anzahl der oeffnenden und schliessenden Klammern mit
-$|u|_{\texttt{(}}$ bzw. $|u|_{\texttt{)}}$. Schreibe $u\preceq w$, wenn $u$ ein Praefix von $w$ ist.
-Dann ist die akzeptierte Sprache
-\[
-\boxed{L(P)=D}
-\]
-mit
-\[
-D=\{w\in\{\texttt{(},\texttt{)}\}^*
-\mid \forall u\preceq w:\ |u|_{\texttt{(}}\ge |u|_{\texttt{)}}\
-\text{ und }\ |w|_{\texttt{(}}=|w|_{\texttt{)}}\}.
-\]
+\medskip
+\textbf{Begruendung.}
+Bei jeder oeffnenden Klammer legt der PDA ein $1$ auf den Stack, bei jeder schliessenden Klammer muss
+er ein $1$ entfernen. Deshalb darf in keinem Praefix mehr \texttt{)} als \texttt{(} vorkommen, sonst
+bricht die Rechnung ab. Akzeptiert wird genau dann, wenn am Ende wieder nur der Bodenmarker uebrig ist,
+also gleich viele \texttt{(} und \texttt{)} gelesen wurden.
 
-Begruendung: Nach dem Lesen eines Praefixes $u$ liegt ueber dem Bodenmarker genau
-$|u|_{\texttt{(}}-|u|_{\texttt{)}}$-mal das Symbol $1$ auf dem Stack, solange dieser Wert nicht
-negativ wird. Wird er negativ, muesste der Automat bei einer schliessenden Klammer ein $1$ entfernen,
-das nicht vorhanden ist; dieser Berechnungspfad bricht also ab. Der Uebergang nach $q_2$ ist genau dann
-moeglich, wenn keine $1$ mehr ueber dem Bodenmarker liegen, also wenn
-$|w|_{\texttt{(}}=|w|_{\texttt{)}}$ gilt.
-
-Intuitiv ist das die Sprache der korrekt geklammerten Woerter mit genau einer Klammerart.
-
-\examplebox{
-Akzeptiert werden zum Beispiel
-\[
-\varepsilon,\qquad \texttt{()},\qquad \texttt{(())},\qquad \texttt{()()}.
-\]
-Nicht akzeptiert werden zum Beispiel
-\[
-\texttt{)(},\qquad \texttt{(()},\qquad \texttt{())}.
-\]
-}
+\medskip
+\textbf{Intuitive Beschreibung.}
+Akzeptiert werden genau die korrekt geklammerten Woerter mit einer Klammerart.
 
 \section*{Aufgabe 5.9}
 
@@ -368,7 +341,8 @@ $\$$ auf den Stack und waehlt dann nichtdeterministisch einen der beiden folgend
 
 Die $a$'s werden ignoriert. Fuer jedes gelesene $b$ werden zwei Symbole $X$ auf den Stack gelegt. Fuer
 jedes gelesene $c$ werden drei Symbole $X$ entfernt. Am Ende wird akzeptiert, wenn genau der
-Bodenmarker erreicht ist.
+Bodenmarker erreicht ist. Eine weitere Marke ist dafuer nicht noetig: Die Kante zum akzeptierenden
+Zustand ist nur anwendbar, wenn kein $X$ mehr ueber dem Bodenmarker liegt.
 
 \begin{center}
 \begin{tikzpicture}[node distance=2.35cm and 2.75cm]
@@ -392,7 +366,9 @@ Bodenmarker erreicht ist.
 \end{center}
 
 Dieser Zweig akzeptiert genau dann, wenn die Anzahl der gelegten $X$ gleich der Anzahl der entfernten
-$X$ ist, also genau dann, wenn $2j=3k$ gilt.
+$X$ ist, also genau dann, wenn $2j=3k$ gilt. Der eigene Zustand $r_c$ trennt dabei die $c$-Phase von
+der $b$-Phase. Wuerde der Zyklus nach einem gelesenen $c$ direkt wieder durch $r_b$ laufen, koennte der
+PDA danach erneut ein $b$ lesen und damit Woerter ausserhalb der Form $a^*b^*c^*$ akzeptieren.
 
 \subsection*{Zweig 2: Pruefe $i+k=j$}
 

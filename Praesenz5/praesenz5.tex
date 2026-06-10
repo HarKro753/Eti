@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
+\usepackage{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{automata,positioning,arrows.meta}
 
@@ -12,6 +13,9 @@
     every state/.style={thick,minimum size=1cm},
     initial text={},
 }
+
+\newcommand{\changed}[1]{\textcolor{blue}{#1}}
+\newcommand{\removed}[1]{\textcolor{red}{#1}}
 
 \newcommand{\methodbox}[1]{%
 \medskip
@@ -63,9 +67,11 @@
 Gegeben ist die Grammatik $G_1=(V,\Sigma,R,S)$ mit
 $V=\{S,A,B,X\}$, $\Sigma=\{0,1\}$ und
 \[
-S\to ABA\mid ABB\mid XA\mid B1,\qquad
-B\to 0\mid 1\mid A,\qquad
-A\to 0\mid 1\mid \varepsilon.
+\begin{aligned}
+S &\to ABA\mid ABB\mid XA\mid B1,\\
+B &\to 0\mid 1\mid A,\\
+A &\to 0\mid 1\mid \varepsilon.
+\end{aligned}
 \]
 Entfernen Sie alle $\varepsilon$-Regeln von nicht-Start-Nonterminalen.
 }
@@ -84,16 +90,27 @@ Nullable sind
 Dabei gilt $A\Rightarrow\varepsilon$, $B\Rightarrow A\Rightarrow\varepsilon$ und
 $S\Rightarrow ABA\Rightarrow\varepsilon$.
 
-\medskip
 Die Produktionen nach dem Entfernen der $\varepsilon$-Regel $A\to\varepsilon$ lauten:
-\[
-\begin{aligned}
-S &\to ABA \mid BA \mid AB \mid AA \mid B \mid A
-      \mid ABB \mid BB \mid XA \mid X \mid B1 \mid 1 \mid \varepsilon,\\
-B &\to 0 \mid 1 \mid A,\\
-A &\to 0 \mid 1.
-\end{aligned}
-\]
+
+\begin{flushleft}
+\scriptsize
+\begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+\textbf{Vorher} & \textbf{Nachher ohne $\varepsilon$-Regeln}\\[0.4em]
+$\begin{aligned}
+S &\to ABA\mid ABB\mid XA\mid B1\\
+B &\to 0\mid 1\mid A\\
+A &\to 0\mid 1\mid \removed{\varepsilon}
+\end{aligned}$
+&
+$\begin{aligned}
+S &\to ABA \mid \changed{BA} \mid \changed{AB} \mid \changed{AA}
+      \mid \changed{B} \mid \changed{A} \mid ABB \mid \changed{BB}\\
+  &\mid XA \mid \changed{X} \mid B1 \mid \changed{1} \mid \changed{\varepsilon}\\
+B &\to 0 \mid 1 \mid A\\
+A &\to 0 \mid 1
+\end{aligned}$
+\end{tabular}
+\end{flushleft}
 Damit gibt es keine $\varepsilon$-Regel eines Nicht-Startsymbols mehr.
 
 \section*{Aufgabe 5.2}
@@ -132,15 +149,28 @@ W & W
 \]
 
 Nach dem Entfernen aller Kettenregeln erhalten wir:
-\[
-\begin{aligned}
-S &\to Vj \mid b \mid Wh \mid k \mid h,\\
-T &\to b \mid Wh \mid k \mid h,\\
-U &\to k \mid h,\\
-V &\to j \mid Vb \mid h,\\
-W &\to h.
-\end{aligned}
-\]
+
+\begin{flushleft}
+\scriptsize
+\begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+\textbf{Vorher} & \textbf{Nachher ohne Kettenregeln}\\[0.4em]
+$\begin{aligned}
+S&\to \removed{T}\mid Vj\\
+T&\to \removed{U}\mid b\mid Wh\\
+U&\to \removed{W}\mid k\\
+V&\to \removed{W}\mid j\mid Vb\\
+W&\to h
+\end{aligned}$
+&
+$\begin{aligned}
+S &\to Vj \mid \changed{b} \mid \changed{Wh} \mid \changed{k} \mid \changed{h}\\
+T &\to b \mid Wh \mid \changed{k} \mid \changed{h}\\
+U &\to k \mid \changed{h}\\
+V &\to j \mid Vb \mid \changed{h}\\
+W &\to h
+\end{aligned}$
+\end{tabular}
+\end{flushleft}
 
 \section*{Aufgabe 5.3}
 
@@ -148,10 +178,12 @@ W &\to h.
 Gegeben ist die Grammatik $G_3=(V,\Sigma,R,S)$ mit
 $V=\{S,X,Y,Z\}$, $\Sigma=\{a,b,c,d\}$ und
 \[
-S\to XYZ\mid aX,\qquad
-X\to XYZ\mid a,\qquad
-Y\to YYZ\mid Zb,\qquad
-Z\to a\mid ab.
+\begin{aligned}
+S &\to XYZ\mid aX,\\
+X &\to XYZ\mid a,\\
+Y &\to YYZ\mid Zb,\\
+Z &\to a\mid ab.
+\end{aligned}
 \]
 Bringen Sie die Grammatik in Chomsky-Normalform.
 }
@@ -178,18 +210,30 @@ mit
 \[
 V'=\{S,X,Y,Z,T_a,T_b,C_{YZ}\}
 \]
-und
-\[
-\begin{aligned}
-S &\to XC_{YZ}\mid T_aX,\\
-X &\to XC_{YZ}\mid a,\\
-Y &\to YC_{YZ}\mid ZT_b,\\
-Z &\to a\mid T_aT_b,\\
-C_{YZ} &\to YZ,\\
-T_a &\to a,\\
-T_b &\to b.
-\end{aligned}
-\]
+und Regeln
+
+\begin{flushleft}
+\scriptsize
+\begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+\textbf{Vorher} & \textbf{Nachher in CNF}\\[0.4em]
+$\begin{aligned}
+S &\to \removed{XYZ}\mid \removed{aX}\\
+X &\to \removed{XYZ}\mid a\\
+Y &\to \removed{YYZ}\mid \removed{Zb}\\
+Z &\to a\mid \removed{ab}
+\end{aligned}$
+&
+$\begin{aligned}
+S &\to \changed{XC_{YZ}}\mid \changed{T_aX}\\
+X &\to \changed{XC_{YZ}}\mid a\\
+Y &\to \changed{YC_{YZ}}\mid \changed{ZT_b}\\
+Z &\to a\mid \changed{T_aT_b}\\
+C_{YZ} &\to \changed{YZ}\\
+T_a &\to \changed{a}\\
+T_b &\to \changed{b}
+\end{aligned}$
+\end{tabular}
+\end{flushleft}
 Alle Produktionen haben nun die Form $A\to BC$ oder $A\to a$.
 
 \section*{Aufgabe 5.4}
@@ -235,6 +279,44 @@ P=(\{q_0,q_1,q_2\},\{0,1\},\{0,1,\$\},\delta,q_0,\{q_2\}).
           (q1) edge node[above] {$\varepsilon,\$\to\varepsilon$} (q2);
 \end{tikzpicture}
 \end{center}
+
+\examplebox{
+Fuer $w=0011$ gleicht sich alles aus:
+\[
+    \$ \xrightarrow{0} 0\$ \xrightarrow{0} 00\$
+    \xrightarrow{1} 0\$ \xrightarrow{1} \$.
+\]
+Am Ende liegt nur noch das Bodensymbol $\$$ auf dem Stack, also wird akzeptiert.
+
+Auch bei gemischter Reihenfolge ist nur die Anzahl wichtig. Fuer $w=0101$ gilt:
+\[
+    \$ \xrightarrow{0} 0\$ \xrightarrow{1} \$
+    \xrightarrow{0} 0\$ \xrightarrow{1} \$.
+\]
+Also wird auch $0101$ akzeptiert.
+
+Fuer $w=001$ bleibt dagegen eine $0$ uebrig:
+\[
+    \$ \xrightarrow{0} 0\$ \xrightarrow{0} 00\$
+    \xrightarrow{1} 0\$.
+\]
+Der Stack ist nicht leer bis auf $\$$, also wird nicht akzeptiert.
+
+Ein gemischtes nicht akzeptiertes Beispiel ist $w=011$:
+\[
+    \$ \xrightarrow{0} 0\$ \xrightarrow{1} \$
+    \xrightarrow{1} 1\$.
+\]
+Hier bleibt eine $1$ uebrig, also wird nicht akzeptiert.
+
+Noch ein gemischtes Beispiel ist $w=10100$:
+\[
+    \$ \xrightarrow{1} 1\$ \xrightarrow{0} \$
+    \xrightarrow{1} 1\$ \xrightarrow{0} \$
+    \xrightarrow{0} 0\$.
+\]
+Hier bleibt eine $0$ uebrig, also wird ebenfalls nicht akzeptiert.
+}
 
 Nach jedem gelesenen Praefix enthaelt der Stack ueber $\$$ genau die Differenz der bisher
 gelesenen Zeichen: lauter $0$en, falls bisher mehr $0$en gelesen wurden, oder lauter $1$en,

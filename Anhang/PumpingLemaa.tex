@@ -342,4 +342,210 @@ Deshalb bekommt man kein Wort außerhalb der Sprache.
 Bei regulären Sprachen darf ein solcher Widerspruch nicht entstehen.
 Hier funktioniert der Pumping-Lemma-Beweis also nicht, weil $L_1$ tatsächlich regulär ist.
 
+\newpage
+
+{\LARGE\bfseries Pumping-Lemma: 10 Uebungsaufgaben\par}
+\vspace{1.5em}
+
+\methodbox{
+In allen folgenden Aufgaben soll mit dem Pumping-Lemma fuer kontextfreie Sprachen gezeigt
+werden, dass die angegebene Sprache nicht kontextfrei ist. Es sollen nur Pumping-Lemma-Beweise
+gefuehrt werden, keine Abschlusseigenschaften und keine Ogden-Lemma-Argumente.
+}
+
+\subsection*{Sehr leichte Aufgaben}
+
+\textbf{Aufgabe 1.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_1=\{a^n b^n c^n\mid n\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=a^p b^p c^p.
+\]
+
+\medskip
+\textbf{Lösung.}
+Angenommen, $L_1$ ist kontextfrei. Dann gibt es nach dem Pumping-Lemma für
+kontextfreie Sprachen eine Pumping-Länge $p\in\mathbb{N}$.
+
+\medskip
+Wir wählen
+\[
+    s=a^p b^p c^p.
+\]
+Dann gilt $s\in L_1$ und $|s|\ge p$.
+
+\medskip
+Sei nun
+\[
+    s=uvwxy
+\]
+eine beliebige Zerlegung mit
+\[
+    |vwx|\le p
+    \qquad\text{und}\qquad
+    |vx|>0.
+\]
+Da jeder der drei Blöcke $a^p$, $b^p$ und $c^p$ Länge $p$ hat, kann das Teilwort
+$vwx$ höchstens in zwei benachbarten Blöcken liegen. Also kann $vx$ nicht gleichzeitig
+$a$'s, $b$'s und $c$'s enthalten.
+
+\medskip
+Wir pumpen mit $i=0$. Dann erhalten wir
+\[
+    uv^0wx^0y=uwy.
+\]
+Dabei werden genau die Zeichen aus $v$ und $x$ entfernt. Wegen $|vx|>0$ wird mindestens
+ein Zeichen entfernt. Gleichzeitig werden aber nicht aus allen drei Blöcken Zeichen entfernt,
+weil $vx$ nicht alle drei Symbolarten enthalten kann.
+
+\medskip
+Damit sind die drei Anzahlen
+\[
+    |uwy|_a,\qquad |uwy|_b,\qquad |uwy|_c
+\]
+nicht mehr alle gleich. Also gilt
+\[
+    uwy\notin L_1.
+\]
+Das widerspricht dem Pumping-Lemma, denn dieses fordert
+\[
+    uv^iwx^iy\in L_1
+    \qquad\text{für alle } i\ge 0.
+\]
+Folglich ist $L_1$ nicht kontextfrei.
+
+\medskip
+\textbf{Aufgabe 2.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_2=\{0^n1^n0^n\mid n\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=0^p1^p0^p.
+\]
+
+\medskip
+\textbf{Aufgabe 3.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_3=\{a^n b^n c^{2n}\mid n\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=a^p b^p c^{2p}.
+\]
+
+\medskip
+\textbf{Aufgabe 4.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_4=\{a^{2n}b^n c^n\mid n\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=a^{2p}b^p c^p.
+\]
+
+\medskip
+\textbf{Aufgabe 5.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_5=\{a^n b^{n+1} c^n\mid n\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=a^p b^{p+1} c^p.
+\]
+
+\medskip
+\textbf{Aufgabe 6.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_6=\{a^n b^n a^n\mid n\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=a^p b^p a^p.
+\]
+
+\newpage
+\subsection*{Mittlere Aufgaben}
+
+\textbf{Aufgabe 7.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_7=\{a^n b^m c^n d^m\mid n,m\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=a^p b^p c^p d^p.
+\]
+
+\medskip
+\textbf{Aufgabe 8.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_8=\{a^m b^n a^m b^n\mid m,n\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=a^p b^p a^p b^p.
+\]
+
+\medskip
+\textbf{Aufgabe 9.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_9=\{ww\mid w\in\{0,1\}^*\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=0^p1^p0^p1^p.
+\]
+
+\medskip
+\textbf{Aufgabe 10.}
+Zeigen Sie mit dem Pumping-Lemma, dass
+\[
+    L_{10}=\{a^k b^\ell c^{k+\ell}\mid k\ge \ell,\ k,\ell\in\mathbb{N}_0\}
+\]
+nicht kontextfrei ist.
+
+\medskip
+\textit{Vorgeschlagenes Pumping-Wort:}
+\[
+    s=a^p b^p c^{2p}.
+\]
+
 \end{document}
